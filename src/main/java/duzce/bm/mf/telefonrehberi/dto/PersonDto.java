@@ -15,10 +15,10 @@ public class PersonDto {
     private String  extensionNumber;
     private String  roomNumber;
     private String  email;
-    private SubDepartment subDepartment;
-    private Department deptName;
+    private SubDepartmentDto subDepartment;
+    private DepartmentDto deptName;
 
-    public PersonDto(String firstName, String lastName, String titleName, String extensionNumber, String roomNumber, String email, SubDepartment subDepartment, Department deptName) {
+    public PersonDto(String firstName, String lastName, String titleName, String extensionNumber, String roomNumber, String email, SubDepartmentDto subDepartment, DepartmentDto deptName) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.titleName = titleName;

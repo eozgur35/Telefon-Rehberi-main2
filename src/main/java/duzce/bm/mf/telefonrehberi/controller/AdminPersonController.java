@@ -2,6 +2,8 @@ package duzce.bm.mf.telefonrehberi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import duzce.bm.mf.telefonrehberi.dto.DepartmentDto;
+import duzce.bm.mf.telefonrehberi.dto.SubDepartmentDto;
 import duzce.bm.mf.telefonrehberi.entity.Person;
 import duzce.bm.mf.telefonrehberi.entity.User;
 import duzce.bm.mf.telefonrehberi.dto.PersonDto;
@@ -41,6 +43,29 @@ public class AdminPersonController {
         List<PersonDto> kisiler = new ArrayList<>();
 
         for (Person p : personList) {
+            DepartmentDto departmentDto = new DepartmentDto();
+            departmentDto.setDepartmentId(p.getSubdepartment().getDepartment().getDepartmentId());
+            departmentDto.setName(p.getSubdepartment().getDepartment().getName());
+            departmentDto.setSubDepartments(p.getSubdepartment().getDepartment().getSubDepartments());
+            departmentDto.setFaxes(p.getSubdepartment().getDepartment().getFaxes());
+            departmentDto.setPhones(p.getSubdepartment().getDepartment().getPhones());
+            SubDepartmentDto subDepartmentDto = new SubDepartmentDto();
+            List<PersonDto> personDtos = new ArrayList<>();
+            for (Person p2 : p.getSubdepartment().getPersons())
+            {
+                personDtos.add(new PersonDto(
+                        p2.getFirstName(),
+                        p2.getLastName(),
+                        p2.getTitleName(),
+                        p2.getExtensionNumber(),
+                        p2.getRoomNumber(),
+                        p2.getEmail(),
+                        subDepartmentDto,
+                        departmentDto
+                ));
+            }
+
+
             PersonDto dto = new PersonDto(
                     p.getFirstName(),
                     p.getLastName(),
@@ -48,8 +73,8 @@ public class AdminPersonController {
                     p.getExtensionNumber(),
                     p.getRoomNumber(),
                     p.getEmail(),
-                    p.getSubdepartment(),
-                    p.getSubdepartment().getDepartment()
+                    subDepartmentDto,
+                    departmentDto
             );
 
             kisiler.add(dto);

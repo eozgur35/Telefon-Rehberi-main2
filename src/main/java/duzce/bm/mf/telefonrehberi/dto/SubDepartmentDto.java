@@ -16,11 +16,11 @@ public class SubDepartmentDto {
 
     private String name;
 
-    private Department department;
+    private DepartmentDto department;
 
-    private List<Person> persons;
+    private List<PersonDto> persons;
 
-    public SubDepartmentDto(String name, Department department, List<Person> persons) {
+    public SubDepartmentDto(String name, DepartmentDto department, List<PersonDto> persons) {
         this.name = name;
         this.department = department;
         this.persons = persons;
