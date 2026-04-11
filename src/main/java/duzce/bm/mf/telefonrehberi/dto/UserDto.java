@@ -10,11 +10,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class UserDto {
+    private int userId;
 
     private String email;
 
     private String password;
 
     private Role role;
+
+    public UserDto(String email, String password, Role role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 
 }

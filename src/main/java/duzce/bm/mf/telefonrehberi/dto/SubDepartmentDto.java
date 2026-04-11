@@ -12,10 +12,17 @@ import java.util.List;
 @Data
 public class SubDepartmentDto {
 
+    private int subDepartmentId;
+
     private String name;
 
     private Department department;
 
     private List<Person> persons;
 
+    public SubDepartmentDto(String name, Department department, List<Person> persons) {
+        this.name = name;
+        this.department = department;
+        this.persons = persons;
+    }
 }

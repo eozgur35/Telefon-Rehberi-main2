@@ -42,15 +42,14 @@ public class AdminPersonController {
 
         for (Person p : personList) {
             PersonDto dto = new PersonDto(
-                p.getSubdepartment().getDepartment(),
-                p.getEmail(),
-                p.getExtensionNumber(),
-                p.getFirstName(),
-                p.getLastName(),
-                p.getPersonId(),
-                p.getRoomNumber(),
-                p.getSubdepartment(),
-                p.getTitleName()
+                    p.getFirstName(),
+                    p.getLastName(),
+                    p.getTitleName(),
+                    p.getExtensionNumber(),
+                    p.getRoomNumber(),
+                    p.getEmail(),
+                    p.getSubdepartment(),
+                    p.getSubdepartment().getDepartment()
             );
 
             kisiler.add(dto);

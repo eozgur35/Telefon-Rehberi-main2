@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class PersonDto {
+    private int personId;
     private String  firstName;
     private String  lastName;
     private String  titleName;
@@ -16,5 +17,16 @@ public class PersonDto {
     private String  email;
     private SubDepartment subDepartment;
     private Department deptName;
+
+    public PersonDto(String firstName, String lastName, String titleName, String extensionNumber, String roomNumber, String email, SubDepartment subDepartment, Department deptName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.titleName = titleName;
+        this.extensionNumber = extensionNumber;
+        this.roomNumber = roomNumber;
+        this.email = email;
+        this.subDepartment = subDepartment;
+        this.deptName = deptName;
+    }
 
 }

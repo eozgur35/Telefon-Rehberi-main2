@@ -12,6 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 public class DepartmentDto {
 
+    private int departmentId;
+
     private String name;
 
     private String phones;
@@ -19,4 +21,11 @@ public class DepartmentDto {
     private String faxes;
 
     private List<SubDepartment> subDepartments;
+
+    public DepartmentDto(String name, String phones, String faxes, List<SubDepartment> subDepartments) {
+        this.name = name;
+        this.phones = phones;
+        this.faxes = faxes;
+        this.subDepartments = subDepartments;
+    }
 }
