@@ -6,6 +6,7 @@ import duzce.bm.mf.telefonrehberi.entity.SubDepartment;
 import duzce.bm.mf.telefonrehberi.repository.DepartmentRepository;
 import duzce.bm.mf.telefonrehberi.repository.PersonRepository;
 import duzce.bm.mf.telefonrehberi.repository.SubDepartmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +19,12 @@ import java.util.List;
 public class RehberController {
 
     // 1. Repository'leri buraya tanımla
-    private final PersonRepository personRepository;
-    private final DepartmentRepository departmentRepository;
-    private final SubDepartmentRepository subDepartmentRepository;
+    @Autowired
+    private PersonRepository personRepository;
+    @Autowired
+    private DepartmentRepository departmentRepository;
+    @Autowired
+    private SubDepartmentRepository subDepartmentRepository;
 
     // 2. Constructor içine hepsini ekle (Spring bunları otomatik bağlar)
     public RehberController(PersonRepository personRepository,
