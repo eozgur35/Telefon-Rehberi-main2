@@ -337,9 +337,16 @@
 
 
 <script th:inline="javascript">
-    // Thymeleaf'ten gelen metni JavaScript dizisine çeviriyoruz
-    const jsonString = /*[[${subDepartmentsJson}]]*/ '[]';
-    const allSubDepts = JSON.parse(jsonString || '[]');
+    /* Thymeleaf, Java'dan gelen 'subDepartments' listesini
+       otomatik olarak hatasız bir JavaScript dizisine dönüştürür. */
+    const allSubDepts = /*[[${subDepartments}]]*/ [];
+</script>
+
+<script>
+    // Buradaki diğer tüm fonksiyonların (openModal, closeModal, loadSubDepts vb.) aynı kalacak
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    // ...
 </script>
 
 <script>

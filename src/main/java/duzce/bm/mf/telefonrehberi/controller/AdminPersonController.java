@@ -41,31 +41,52 @@ public class AdminPersonController {
         List<PersonDto> kisiler = new ArrayList<>();
 
         for (Person p : personList) {
+            // NullPointerException almamak için güvenli atamalar yapıyoruz
+            String deptName = null;
+            String subDeptName = null;
+            Integer subDeptId = null;
+
+            if (p.getSubdepartment() != null) {
+                subDeptName = p.getSubdepartment().getName();
+                subDeptId = p.getSubdepartment().getSubDepartmentId();
+
+                if (p.getSubdepartment().getDepartment() != null) {
+                    deptName = p.getSubdepartment().getDepartment().getName();
+                }
+            }
+
+            // Yeni PersonDto yapısına göre verileri dolduruyoruz
             PersonDto dto = new PersonDto(
-                p.getSubdepartment().getDepartment(),
-                p.getEmail(),
-                p.getExtensionNumber(),
-                p.getFirstName(),
-                p.getLastName(),
-                p.getPersonId(),
-                p.getRoomNumber(),
-                p.getSubdepartment(),
-                p.getTitleName()
+                    p.getPersonId(),
+                    p.getFirstName(),
+                    p.getLastName(),
+                    p.getTitleName(),
+                    p.getExtensionNumber(),
+                    p.getRoomNumber(),
+                    p.getEmail(),
+                    subDeptName,
+                    subDeptId,
+                    deptName
             );
 
             kisiler.add(dto);
         }
 
-        // Alt birimleri JS için JSON olarak göm
+        // Alt birimleri JS için hazırlıyoruz
         List<Map<String, Object>> subList = subDepartmentRepository.findAll().stream()
                 .map(s -> {
                     Map<String, Object> m = new HashMap<>();
                     m.put("subDepartmentId", s.getSubDepartmentId());
                     m.put("name", s.getName());
-                    m.put("departmentId", s.getDepartment().getDepartmentId());
+
+                    // NullPointerException almamak için güvenli departman ID çekimi
+                    m.put("departmentId", s.getDepartment() != null ? s.getDepartment().getDepartmentId() : 0);
                     return m;
                 })
                 .collect(Collectors.toList());
+
+// JSON'A ÇEVİRMEDEN doğrudan listeyi model'e ekliyoruz:
+        model.addAttribute("subDepartments", subList);
 
         try {
             model.addAttribute("subDepartmentsJson", objectMapper.writeValueAsString(subList));
