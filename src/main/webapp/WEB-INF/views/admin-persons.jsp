@@ -1,5 +1,9 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
+
 <!DOCTYPE html>
-<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -98,8 +102,8 @@
         </div>
     </a>
     <div class="header-right">
-        <span class="admin-badge" th:text="${oturumEmail}">admin@kurum.edu.tr</span>
-        <a th:href="@{/logout}">Çıkış Yap</a>
+        <span class="admin-badge">${oturumEmail}</span>
+        <a href="/logout">Çıkış Yap</a>
     </div>
 </header>
 
@@ -108,7 +112,9 @@
         <label>Birim</label>
         <select id="deptFilter" onchange="filterTable()">
             <option value="">Tüm Birimler</option>
-            <option th:each="d : ${departments}" th:value="${d.name}" th:text="${d.name}"></option>
+            <c:forEach var="d" items="${departments}">
+                <option value="${d.name}">${d.name}</option>
+            </c:forEach>
         </select>
     </div>
     <div class="filter-group">
@@ -118,14 +124,18 @@
 </div>
 
 <main>
-    <div class="alert alert-success" th:if="${mesaj}">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-        <span th:text="${mesaj}"></span>
-    </div>
-    <div class="alert alert-error" th:if="${hata}">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span th:text="${hata}"></span>
-    </div>
+    <c:if test="${not empty mesaj}">
+        <div class="alert alert-success">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            <span>${mesaj}</span>
+        </div>
+    </c:if>
+    <c:if test="${not empty hata}">
+        <div class="alert alert-error">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>${hata}</span>
+        </div>
+    </c:if>
 
     <div class="section-header">
         <h2>Kişi Yönetimi</h2>
@@ -139,7 +149,7 @@
         <div class="table-inner-header">
             <h3>Kayıtlı Kişiler</h3>
             <span class="count-badge" id="resultCount">
-                <span th:text="${#lists.size(kisiler)}">0</span> kişi
+                <span>${fn:length(kisiler)}</span> kişi
             </span>
         </div>
         <table>
@@ -155,52 +165,68 @@
             </tr>
             </thead>
             <tbody id="personTable">
-            <tr th:if="${#lists.isEmpty(kisiler)}">
-                <td colspan="7" style="padding:2.5rem;text-align:center;color:#9ca3af;font-size:14px;">Henüz kayıtlı kişi bulunmuyor.</td>
-            </tr>
 
-            <!-- Tüm veriler data-* attribute'larına taşındı, th:onclick tırnak sorunu yok -->
-            <tr th:each="k : ${kisiler}"
-                class="person-row"
-                th:attr="data-name=${k.firstName + ' ' + k.lastName},
-                             data-ext=${k.extensionNumber != null ? k.extensionNumber : ''},
-                             data-dept=${k.deptName != null ? k.deptName : ''},
-                             data-person-id=${k.personId},
-                             data-first-name=${k.firstName},
-                             data-last-name=${k.lastName},
-                             data-title=${k.titleName != null ? k.titleName : ''},
-                             data-extension=${k.extensionNumber != null ? k.extensionNumber : ''},
-                             data-room=${k.roomNumber != null ? k.roomNumber : ''},
-                             data-email=${k.email != null ? k.email : ''},
-                             data-sub-id=${k.subDeptId != null ? k.subDeptId : 0}">
+            <c:choose>
+                <c:when test="${empty kisiler}">
+                    <tr>
+                        <td colspan="7" style="padding:2.5rem;text-align:center;color:#9ca3af;font-size:14px;">Henüz kayıtlı kişi bulunmuyor.</td>
+                    </tr>
+                </c:when>
+                <c:otherwise>
+                    <c:forEach var="k" items="${kisiler}">
+                        <tr class="person-row"
+                            data-name="${k.firstName} ${k.lastName}"
+                            data-ext="${not empty k.extensionNumber ? k.extensionNumber : ''}"
+                            data-dept="${not empty k.deptName ? k.deptName : ''}"
+                            data-person-id="${k.personId}"
+                            data-first-name="${k.firstName}"
+                            data-last-name="${k.lastName}"
+                            data-title="${not empty k.titleName ? k.titleName : ''}"
+                            data-extension="${not empty k.extensionNumber ? k.extensionNumber : ''}"
+                            data-room="${not empty k.roomNumber ? k.roomNumber : ''}"
+                            data-email="${not empty k.email ? k.email : ''}"
+                            data-sub-id="${not empty k.subDeptId ? k.subDeptId : 0}">
 
-                <td>
-                    <div class="person-name" th:text="${k.firstName + ' ' + k.lastName}"></div>
-                    <div class="person-title" th:text="${k.titleName}"></div>
-                </td>
-                <td th:text="${k.deptName != null ? k.deptName : '—'}"></td>
-                <td th:text="${k.subDeptName != null ? k.subDeptName : '—'}"></td>
-                <td>
-                    <span class="badge-room" th:if="${k.roomNumber != null and !#strings.isEmpty(k.roomNumber)}" th:text="${k.roomNumber}"></span>
-                    <span th:if="${k.roomNumber == null or #strings.isEmpty(k.roomNumber)}">—</span>
-                </td>
-                <td>
-                    <span class="badge-ext" th:if="${k.extensionNumber != null and !#strings.isEmpty(k.extensionNumber)}" th:text="${k.extensionNumber}"></span>
-                    <span th:if="${k.extensionNumber == null or #strings.isEmpty(k.extensionNumber)}">—</span>
-                </td>
-                <td>
-                    <a style="color:#1a3a6b;font-size:13px;text-decoration:none;"
-                       th:if="${k.email != null and !#strings.isEmpty(k.email)}"
-                       th:href="'mailto:' + ${k.email}" th:text="${k.email}"></a>
-                    <span th:if="${k.email == null or #strings.isEmpty(k.email)}">—</span>
-                </td>
-                <td>
-                    <div class="td-actions">
-                        <button class="btn btn-outline btn-sm" onclick="openEditFromRow(this)">Düzenle</button>
-                        <button class="btn btn-danger btn-sm"  onclick="openDeleteFromRow(this)">Sil</button>
-                    </div>
-                </td>
-            </tr>
+                            <td>
+                                <div class="person-name">${k.firstName} ${k.lastName}</div>
+                                <div class="person-title">${k.titleName}</div>
+                            </td>
+                            <td>${not empty k.deptName ? k.deptName : '—'}</td>
+                            <td>${not empty k.subDeptName ? k.subDeptName : '—'}</td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${not empty k.roomNumber}">
+                                        <span class="badge-room">${k.roomNumber}</span>
+                                    </c:when>
+                                    <c:otherwise>—</c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${not empty k.extensionNumber}">
+                                        <span class="badge-ext">${k.extensionNumber}</span>
+                                    </c:when>
+                                    <c:otherwise>—</c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${not empty k.email}">
+                                        <a style="color:#1a3a6b;font-size:13px;text-decoration:none;" href="mailto:${k.email}">${k.email}</a>
+                                    </c:when>
+                                    <c:otherwise>—</c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <div class="td-actions">
+                                    <button class="btn btn-outline btn-sm" onclick="openEditFromRow(this)">Düzenle</button>
+                                    <button class="btn btn-danger btn-sm"  onclick="openDeleteFromRow(this)">Sil</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </c:otherwise>
+            </c:choose>
             </tbody>
         </table>
     </div>
@@ -208,8 +234,6 @@
 
 <footer><span>2026</span> — BM470 - Ders Projesi</footer>
 
-
-<!-- MODAL: YENİ KİŞİ EKLE -->
 <div class="modal-overlay" id="modalEkle">
     <div class="modal">
         <h3>Yeni Kişi Ekle</h3>
@@ -244,7 +268,9 @@
                     <label>Birim</label>
                     <select id="ekle-deptSelect" onchange="loadSubDepts('ekle-deptSelect','ekle-subSelect')">
                         <option value="">— Birim Seç —</option>
-                        <option th:each="d : ${departments}" th:value="${d.departmentId}" th:text="${d.name}"></option>
+                        <c:forEach var="d" items="${departments}">
+                            <option value="${d.departmentId}">${d.name}</option>
+                        </c:forEach>
                     </select>
                 </div>
                 <div class="form-group">
@@ -262,8 +288,6 @@
     </div>
 </div>
 
-
-<!-- MODAL: KİŞİ DÜZENLE -->
 <div class="modal-overlay" id="modalDuzenle">
     <div class="modal">
         <h3>Kişiyi Düzenle</h3>
@@ -299,7 +323,9 @@
                     <label>Birim</label>
                     <select id="edit-deptSelect" onchange="loadSubDepts('edit-deptSelect','edit-subSelect')">
                         <option value="">— Birim Seç —</option>
-                        <option th:each="d : ${departments}" th:value="${d.departmentId}" th:text="${d.name}"></option>
+                        <c:forEach var="d" items="${departments}">
+                            <option value="${d.departmentId}">${d.name}</option>
+                        </c:forEach>
                     </select>
                 </div>
                 <div class="form-group">
@@ -317,8 +343,6 @@
     </div>
 </div>
 
-
-<!-- MODAL: KİŞİ SİL -->
 <div class="modal-overlay" id="modalSil">
     <div class="modal">
         <h3>Kişiyi Sil</h3>
@@ -335,21 +359,11 @@
     </div>
 </div>
 
-
-<script th:inline="javascript">
-    /* Thymeleaf, Java'dan gelen 'subDepartments' listesini
-       otomatik olarak hatasız bir JavaScript dizisine dönüştürür. */
-    const allSubDepts = /*[[${subDepartments}]]*/ [];
-</script>
-
 <script>
-    // Buradaki diğer tüm fonksiyonların (openModal, closeModal, loadSubDepts vb.) aynı kalacak
-    function openModal(id)  { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    // ...
-</script>
+    // Controller'dan gönderilen JSON verisini JavaScript değişkenine alıyoruz
+    // (Eğer Controller'da ObjectMapper silmediysen subDepartmentsJson olarak gelir)
+    const allSubDepts = ${not empty subDepartmentsJson ? subDepartmentsJson : '[]'};
 
-<script>
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
@@ -410,16 +424,10 @@
         let visible = 0;
 
         rows.forEach(row => {
-            // Satırdaki tüm metinleri (Ad, Soyad, Birim, Bölüm, Unvan vb.) birleştirip alıyoruz
             const rowText = row.innerText.toLowerCase();
-
-            // Metin arama kutusu kontrolü (Boşsa her zaman true)
             const matchSearch = !q || rowText.includes(q);
-
-            // Birim Dropdown filtresi kontrolü (Boşsa her zaman true)
             const matchDept = !dept || (row.dataset.dept || '').toLowerCase() === dept;
 
-            // Hem metin araması hem de dropdown seçimi uyuyorsa satırı göster
             if (matchSearch && matchDept) {
                 row.style.display = '';
                 visible++;
@@ -428,7 +436,7 @@
             }
         });
 
-        document.getElementById('resultCount').textContent = visible + ' kişi';
+        document.getElementById('resultCount').querySelector('span').textContent = visible;
     }
 </script>
 

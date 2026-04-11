@@ -1,5 +1,8 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+
 <!DOCTYPE html>
-<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -176,23 +179,22 @@
         <h2>Yönetici Girişi</h2>
         <p>Devam etmek için e-posta ve şifrenizi girin.</p>
 
-        <!-- Hata mesajı -->
-        <div class="error-box" th:if="${hata}">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
-            <span th:text="${hata}">Hata mesajı</span>
-        </div>
+        <c:if test="${not empty hata}">
+            <div class="error-box">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span>${hata}</span>
+            </div>
+        </c:if>
 
-        <!-- Login formu — Spring Security kullanmıyorsan action="/login" POST -->
-        <form th:action="@{/login}" method="post">
-            <!-- CSRF token (Spring Security varsa otomatik eklenir) -->
+        <form action="/login" method="post">
 
             <div class="form-group">
                 <label for="email">E-posta</label>
                 <input type="email" id="email" name="email" placeholder="ornek@kurum.edu.tr"
                        autocomplete="email" required
-                       th:value="${girisEmail}">
+                       value="${girisEmail}">
             </div>
 
             <div class="form-group">
