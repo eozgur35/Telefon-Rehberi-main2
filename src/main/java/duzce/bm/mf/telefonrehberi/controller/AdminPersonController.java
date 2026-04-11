@@ -2,9 +2,9 @@ package duzce.bm.mf.telefonrehberi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import duzce.bm.mf.telefonrehberi.dto.PersonDto;
 import duzce.bm.mf.telefonrehberi.entity.Person;
 import duzce.bm.mf.telefonrehberi.entity.User;
+import duzce.bm.mf.telefonrehberi.dto.PersonDto;
 import duzce.bm.mf.telefonrehberi.enums.Role;
 import duzce.bm.mf.telefonrehberi.repository.DepartmentRepository;
 import duzce.bm.mf.telefonrehberi.repository.PersonRepository;
@@ -15,10 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -34,36 +32,29 @@ public class AdminPersonController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public AdminPersonController(PersonRepository personRepository,
-                                 DepartmentRepository departmentRepository,
-                                 SubDepartmentRepository subDepartmentRepository,
-                                 ObjectMapper objectMapper) {
-        this.personRepository = personRepository;
-        this.departmentRepository = departmentRepository;
-        this.subDepartmentRepository = subDepartmentRepository;
-        this.objectMapper = objectMapper;
-    }
-
     // ── Kişi listesi ───────────────────────────────────────────────────
     @GetMapping
     public String personListesi(HttpSession session, Model model) {
         if (!isAdmin(session)) return "redirect:/login";
         // LAZY loading sorununu önlemek için entity yerine DTO kullan
-        List<PersonDto> kisiler = personRepository.findAll().stream()
-                .map(p -> new PersonDto(
-                        p.getPersonId(),
-                        p.getFirstName(),
-                        p.getLastName(),
-                        p.getTitleName(),
-                        p.getExtensionNumber(),
-                        p.getRoomNumber(),
-                        p.getEmail(),
-                        p.getSubdepartment() != null ? p.getSubdepartment().getSubDepartmentId() : null,
-                        p.getSubdepartment() != null ? p.getSubdepartment().getName() : null,
-                        p.getSubdepartment() != null && p.getSubdepartment().getDepartment() != null
-                                ? p.getSubdepartment().getDepartment().getName() : null
-                ))
-                .collect(Collectors.toList());
+        List<Person> personList = personRepository.findAll();
+        List<PersonDto> kisiler = new ArrayList<>();
+
+        for (Person p : personList) {
+            PersonDto dto = new PersonDto(
+                p.getSubdepartment().getDepartment(),
+                p.getEmail(),
+                p.getExtensionNumber(),
+                p.getFirstName(),
+                p.getLastName(),
+                p.getPersonId(),
+                p.getRoomNumber(),
+                p.getSubdepartment(),
+                p.getTitleName()
+            );
+
+            kisiler.add(dto);
+        }
 
         // Alt birimleri JS için JSON olarak göm
         List<Map<String, Object>> subList = subDepartmentRepository.findAll().stream()
