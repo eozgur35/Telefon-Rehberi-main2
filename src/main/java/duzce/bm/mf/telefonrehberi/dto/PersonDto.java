@@ -8,16 +8,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PersonDto {
-    private int     personId;
-    private String  firstName;
-    private String  lastName;
-    private String  titleName;
-    private String  extensionNumber;
-    private String  roomNumber;
-    private String  email;
-
-    // Entity nesneleri yerine sadece ekranda lazım olan String ve ID'leri tutuyoruz
-    private String  subDeptName;
-    private Integer subDeptId;
-    private String  deptName;
+    private int personId;
+    private String firstName;
+    private String lastName;
+    private String titleName;
+    private String extensionNumber;
+    private String roomNumber;
+    private String email;
+    private String subDeptName;
+    private int subDeptId;
+    private String deptName;
 }
