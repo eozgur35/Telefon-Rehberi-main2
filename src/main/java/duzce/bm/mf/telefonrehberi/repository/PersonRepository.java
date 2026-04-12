@@ -5,13 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PersonRepository extends JpaRepository<Person, Integer> {
-    // Alt birime (Bölüm) göre filtreleme
-    List<Person> findBySubdepartmentSubDepartmentId(Integer subDepartmentId);
 
-    // Ana birime (Departman) göre tüm personeli getirme
-    List<Person> findBySubdepartmentDepartmentDepartmentId(Integer departmentId);
+    Person findByPersonId(int personId);
 
-    // Mevcut arama metodun kalabilir
+    List<Person> findBySubdepartmentSubDepartmentId(int subDepartmentId);
+
+    List<Person> findBySubdepartmentDepartmentDepartmentId(int departmentId);
+
     List<Person> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName);
 }
 

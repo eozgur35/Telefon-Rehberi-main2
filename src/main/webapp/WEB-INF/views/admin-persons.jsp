@@ -238,7 +238,7 @@
     <div class="modal">
         <h3>Yeni Kişi Ekle</h3>
         <p>Kişinin bilgilerini doldurun.</p>
-        <form action="/admin/persons/ekle" method="post">
+        <form action="/admin/persons/create" method="post">
             <div class="form-grid">
                 <div class="form-group">
                     <label>Ad</label>
@@ -292,7 +292,7 @@
     <div class="modal">
         <h3>Kişiyi Düzenle</h3>
         <p>Güncellemek istediğiniz alanları değiştirin.</p>
-        <form action="/admin/persons/guncelle" method="post">
+        <form action="/admin/persons/update" method="post">
             <input type="hidden" name="personId" id="editPersonId">
             <div class="form-grid">
                 <div class="form-group">
@@ -349,7 +349,7 @@
         <div class="delete-warning">
             <strong id="deleteName"></strong> adlı kişi kalıcı olarak silinecek. Bu işlem geri alınamaz.
         </div>
-        <form action="/admin/persons/sil" method="post">
+        <form action="/admin/persons/delete" method="post">
             <input type="hidden" name="personId" id="deletePersonId">
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline" onclick="closeModal('modalSil')">Vazgeç</button>
