@@ -1,11 +1,11 @@
 package duzce.bm.mf.telefonrehberi.controller;
 
-import duzce.bm.mf.telefonrehberi.entity.Department;
-import duzce.bm.mf.telefonrehberi.entity.Person;
-import duzce.bm.mf.telefonrehberi.entity.SubDepartment;
-import duzce.bm.mf.telefonrehberi.repository.DepartmentRepository;
-import duzce.bm.mf.telefonrehberi.repository.PersonRepository;
-import duzce.bm.mf.telefonrehberi.repository.SubDepartmentRepository;
+import duzce.bm.mf.telefonrehberi.dto.DepartmentDto;
+import duzce.bm.mf.telefonrehberi.dto.PersonDto;
+import duzce.bm.mf.telefonrehberi.dto.SubDepartmentDto;
+import duzce.bm.mf.telefonrehberi.services.Impl.AdminPersonService;
+import duzce.bm.mf.telefonrehberi.services.Impl.DepartmentService;
+import duzce.bm.mf.telefonrehberi.services.Impl.SubDepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,22 +18,13 @@ import java.util.List;
 @Controller
 public class RehberController {
 
-    // 1. Repository'leri buraya tanımla
     @Autowired
-    private PersonRepository personRepository;
+    AdminPersonService adminPersonService;
     @Autowired
-    private DepartmentRepository departmentRepository;
+    DepartmentService departmentService;
     @Autowired
-    private SubDepartmentRepository subDepartmentRepository;
+    SubDepartmentService subDepartmentService;
 
-    // 2. Constructor içine hepsini ekle (Spring bunları otomatik bağlar)
-    public RehberController(PersonRepository personRepository,
-                            DepartmentRepository departmentRepository,
-                            SubDepartmentRepository subDepartmentRepository) {
-        this.personRepository = personRepository;
-        this.departmentRepository = departmentRepository;
-        this.subDepartmentRepository = subDepartmentRepository;
-    }
 
     @GetMapping("/")
     public String anaSayfa(Model model,
@@ -41,25 +32,25 @@ public class RehberController {
                            @RequestParam(name = "subDepartmentId", required = false) Integer subDepartmentId) {
 
         // Artık departmentRepository.findAll() hata vermeyecektir
-        model.addAttribute("departments", departmentRepository.findAll());
+        model.addAttribute("departments", departmentService.getAllDepartments());
 
-        Department selectedDept = null;
-        List<SubDepartment> subDepts = new ArrayList<>();
-        List<Person> kisiler;
+        DepartmentDto selectedDept = null;
+        List<SubDepartmentDto> subDepts = new ArrayList<>();
+        List<PersonDto> kisiler;
 
         if (departmentId != null) {
-            selectedDept = departmentRepository.findById(departmentId).orElse(null);
+            selectedDept = departmentService.findById(departmentId);
             if (selectedDept != null) {
-                subDepts = subDepartmentRepository.findByDepartment(selectedDept);
+                subDepts = subDepartmentService.findByDepartment(departmentId);
             }
         }
 
         if (subDepartmentId != null) {
-            kisiler = personRepository.findBySubdepartmentSubDepartmentId(subDepartmentId);
+            kisiler = adminPersonService.findBySubdepartmentSubDepartmentId(subDepartmentId);
         } else if (departmentId != null) {
-            kisiler = personRepository.findBySubdepartmentDepartmentDepartmentId(departmentId);
+            kisiler = adminPersonService.findBySubdepartmentDepartmentDepartmentId(departmentId);
         } else {
-            kisiler = personRepository.findAll();
+            kisiler = adminPersonService.getAllPerson();
         }
 
         model.addAttribute("subDepartments", subDepts);

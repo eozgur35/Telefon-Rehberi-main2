@@ -167,16 +167,16 @@
                             </td>
                             <td>
                                 <c:choose>
-                                    <c:when test="${kisi.subdepartment != null && kisi.subdepartment.department != null}">
-                                        ${kisi.subdepartment.department.name}
+                                    <c:when test="${not empty kisi.deptName}">
+                                        ${kisi.deptName}
                                     </c:when>
                                     <c:otherwise>—</c:otherwise>
                                 </c:choose>
                             </td>
                             <td>
                                 <c:choose>
-                                    <c:when test="${kisi.subdepartment != null}">
-                                        ${kisi.subdepartment.name}
+                                    <c:when test="${not empty kisi.subDeptName}">
+                                        ${kisi.subDeptName}
                                     </c:when>
                                     <c:otherwise>—</c:otherwise>
                                 </c:choose>

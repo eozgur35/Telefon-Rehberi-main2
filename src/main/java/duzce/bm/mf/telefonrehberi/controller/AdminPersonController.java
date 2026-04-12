@@ -2,6 +2,9 @@ package duzce.bm.mf.telefonrehberi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import duzce.bm.mf.telefonrehberi.dto.DepartmentDto;
+import duzce.bm.mf.telefonrehberi.dto.SubDepartmentDto;
+import duzce.bm.mf.telefonrehberi.dto.UserDto;
 import duzce.bm.mf.telefonrehberi.entity.Person;
 import duzce.bm.mf.telefonrehberi.entity.User;
 import duzce.bm.mf.telefonrehberi.dto.PersonDto;
@@ -9,8 +12,13 @@ import duzce.bm.mf.telefonrehberi.enums.Role;
 import duzce.bm.mf.telefonrehberi.repository.DepartmentRepository;
 import duzce.bm.mf.telefonrehberi.repository.PersonRepository;
 import duzce.bm.mf.telefonrehberi.repository.SubDepartmentRepository;
+import duzce.bm.mf.telefonrehberi.services.IAdminPersonService;
+import duzce.bm.mf.telefonrehberi.services.Impl.AdminPersonService;
+import duzce.bm.mf.telefonrehberi.services.Impl.DepartmentService;
+import duzce.bm.mf.telefonrehberi.services.Impl.SubDepartmentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,68 +32,24 @@ import java.util.stream.Collectors;
 public class AdminPersonController {
 
     @Autowired
-    private PersonRepository personRepository;
-    @Autowired
-    private DepartmentRepository departmentRepository;
-    @Autowired
-    private SubDepartmentRepository subDepartmentRepository;
-    @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    AdminPersonService adminPersonService;
+    @Autowired
+    SubDepartmentService subDepartmentService;
+    @Autowired
+    DepartmentService departmentService;
 
     // ── Kişi listesi ───────────────────────────────────────────────────
     @GetMapping
     public String personListesi(HttpSession session, Model model) {
         if (!isAdmin(session)) return "redirect:/login";
-        // LAZY loading sorununu önlemek için entity yerine DTO kullan
-        List<Person> personList = personRepository.findAll();
-        List<PersonDto> kisiler = new ArrayList<>();
-
-        for (Person p : personList) {
-            // NullPointerException almamak için güvenli atamalar yapıyoruz
-            String deptName = null;
-            String subDeptName = null;
-            Integer subDeptId = null;
-
-            if (p.getSubdepartment() != null) {
-                subDeptName = p.getSubdepartment().getName();
-                subDeptId = p.getSubdepartment().getSubDepartmentId();
-
-                if (p.getSubdepartment().getDepartment() != null) {
-                    deptName = p.getSubdepartment().getDepartment().getName();
-                }
-            }
-
-            // Yeni PersonDto yapısına göre verileri dolduruyoruz
-            PersonDto dto = new PersonDto(
-                    p.getPersonId(),
-                    p.getFirstName(),
-                    p.getLastName(),
-                    p.getTitleName(),
-                    p.getExtensionNumber(),
-                    p.getRoomNumber(),
-                    p.getEmail(),
-                    subDeptName,
-                    subDeptId,
-                    deptName
-            );
-
-            kisiler.add(dto);
-        }
+        List<PersonDto> kisiler = adminPersonService.getAllPerson();
 
         // Alt birimleri JS için hazırlıyoruz
-        List<Map<String, Object>> subList = subDepartmentRepository.findAll().stream()
-                .map(s -> {
-                    Map<String, Object> m = new HashMap<>();
-                    m.put("subDepartmentId", s.getSubDepartmentId());
-                    m.put("name", s.getName());
-
-                    // NullPointerException almamak için güvenli departman ID çekimi
-                    m.put("departmentId", s.getDepartment() != null ? s.getDepartment().getDepartmentId() : 0);
-                    return m;
-                })
-                .collect(Collectors.toList());
-
-// JSON'A ÇEVİRMEDEN doğrudan listeyi model'e ekliyoruz:
+        List<SubDepartmentDto> subList = subDepartmentService.getAllSubDepartments();
+        List<DepartmentDto> deptList = departmentService.getAllDepartments();
+        // JSON'A ÇEVİRMEDEN doğrudan listeyi model'e ekliyoruz:
         model.addAttribute("subDepartments", subList);
 
         try {
@@ -95,7 +59,7 @@ public class AdminPersonController {
         }
 
         model.addAttribute("kisiler", kisiler);
-        model.addAttribute("departments", departmentRepository.findAll());
+        model.addAttribute("departments", deptList);
         model.addAttribute("oturumEmail", session.getAttribute("oturumEmail"));
 
         return "admin-persons";
@@ -113,22 +77,24 @@ public class AdminPersonController {
                              HttpSession session,
                              RedirectAttributes ra) {
 
-        if (!isAdmin(session)) return "redirect:/login";
+        if (!isAdmin(session))
+            return "redirect:/login";
 
-        Person person = new Person();
-        person.setFirstName(firstName);
-        person.setLastName(lastName);
-        person.setTitleName(titleName);
-        person.setExtensionNumber(extensionNumber);
-        person.setRoomNumber(roomNumber);
-        person.setEmail(email);
+        PersonDto personDto = new PersonDto(
+            0,
+                firstName,
+                lastName,
+                titleName,
+                extensionNumber,
+                roomNumber,
+                email,
+                null,
+                subDepartmentId,
+                null
+        );
 
-        if (subDepartmentId != null && subDepartmentId > 0) {
-            subDepartmentRepository.findById(subDepartmentId)
-                    .ifPresent(person::setSubdepartment);
-        }
 
-        personRepository.save(person);
+        adminPersonService.savePerson(personDto);
         ra.addFlashAttribute("mesaj", firstName + " " + lastName + " başarıyla eklendi.");
         return "redirect:/admin/persons";
     }
@@ -147,29 +113,21 @@ public class AdminPersonController {
                                  RedirectAttributes ra) {
 
         if (!isAdmin(session)) return "redirect:/login";
+        PersonDto personDto = new PersonDto(
+                personId,
+                firstName,
+                lastName,
+                titleName,
+                extensionNumber,
+                roomNumber,
+                email,
+                null,
+                subDepartmentId,
+                null
+        );
 
-        Optional<Person> personOpt = personRepository.findById(personId);
-        if (!personOpt.isPresent()) {
-            ra.addFlashAttribute("hata", "Güncellenecek kişi bulunamadı.");
-            return "redirect:/admin/persons";
-        }
 
-        Person person = personOpt.get();
-        person.setFirstName(firstName);
-        person.setLastName(lastName);
-        person.setTitleName(titleName);
-        person.setExtensionNumber(extensionNumber);
-        person.setRoomNumber(roomNumber);
-        person.setEmail(email);
-
-        if (subDepartmentId != null && subDepartmentId > 0) {
-            subDepartmentRepository.findById(subDepartmentId)
-                    .ifPresent(person::setSubdepartment);
-        } else {
-            person.setSubdepartment(null);
-        }
-
-        personRepository.save(person);
+        adminPersonService.savePerson(personDto);
         ra.addFlashAttribute("mesaj", firstName + " " + lastName + " başarıyla güncellendi.");
         return "redirect:/admin/persons";
     }
@@ -182,11 +140,9 @@ public class AdminPersonController {
 
         if (!isAdmin(session)) return "redirect:/login";
 
-        Optional<Person> personOpt = personRepository.findById(personId);
-        if (personOpt.isPresent()) {
-            Person p = personOpt.get();
-            personRepository.deleteById(personId);
-            ra.addFlashAttribute("mesaj", p.getFirstName() + " " + p.getLastName() + " silindi.");
+        boolean sonuc = adminPersonService.deletePerson(personId);
+        if (sonuc) {
+            ra.addFlashAttribute("mesaj", personId + " " + "numaraali kisi" + " silindi.");
         } else {
             ra.addFlashAttribute("hata", "Silinecek kişi bulunamadı.");
         }
@@ -196,7 +152,7 @@ public class AdminPersonController {
 
     // ── Yardımcı ───────────────────────────────────────────────────────
     private boolean isAdmin(HttpSession session) {
-        User user = (User) session.getAttribute("oturumUser");
+        UserDto user = (UserDto) session.getAttribute("oturumUser");
         return user != null && user.getRole() == Role.ADMIN;
     }
 }
