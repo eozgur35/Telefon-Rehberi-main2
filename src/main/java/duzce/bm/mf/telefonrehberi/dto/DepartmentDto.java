@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class DepartmentDto {
     private int departmentId;
     private String name;
+    private String phones;
+    private String faxes;
 }

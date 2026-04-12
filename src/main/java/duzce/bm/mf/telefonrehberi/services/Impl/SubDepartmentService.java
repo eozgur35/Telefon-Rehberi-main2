@@ -1,6 +1,8 @@
 package duzce.bm.mf.telefonrehberi.services.Impl;
 
+import duzce.bm.mf.telefonrehberi.dto.DepartmentDto;
 import duzce.bm.mf.telefonrehberi.dto.SubDepartmentDto;
+import duzce.bm.mf.telefonrehberi.entity.Department;
 import duzce.bm.mf.telefonrehberi.entity.SubDepartment;
 import duzce.bm.mf.telefonrehberi.repository.SubDepartmentRepository;
 import duzce.bm.mf.telefonrehberi.services.ISubDepartmentService;
@@ -33,14 +35,26 @@ public class SubDepartmentService implements ISubDepartmentService {
         return subDepartmentDtoList;
     }
 
-    public String getSubDepartmentNameById(Integer id)
-    {
-        Optional<SubDepartment> subDepartment = subDepartmentRepository.findById(id);
+    public List<SubDepartmentDto> findByDepartment(Integer id) {
+        Department tempDept = new Department();
+        tempDept.setDepartmentId(id);
 
-        if(subDepartment.isPresent())
-        {
-            return subDepartment.get().getName();
+        List<SubDepartment> subDepartments = subDepartmentRepository.findByDepartment(tempDept);
+
+        List<SubDepartmentDto> subDepartmentDtoList = new ArrayList<>();
+
+        for (SubDepartment sd : subDepartments) {
+            SubDepartmentDto dto = new SubDepartmentDto();
+
+            BeanUtils.copyProperties(sd, dto);
+
+            if (sd.getDepartment() != null) {
+                dto.setDepartmentId(sd.getDepartment().getDepartmentId());
+            }
+
+            subDepartmentDtoList.add(dto);
         }
-        return null;
+
+        return subDepartmentDtoList;
     }
 }

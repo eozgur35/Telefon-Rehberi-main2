@@ -1,5 +1,6 @@
 package duzce.bm.mf.telefonrehberi.filter;
 
+import duzce.bm.mf.telefonrehberi.dto.UserDto;
 import duzce.bm.mf.telefonrehberi.entity.User;
 import duzce.bm.mf.telefonrehberi.enums.Role;
 import jakarta.servlet.*;
@@ -27,7 +28,7 @@ public class AdminSessionFilter implements Filter {
 
         if (path.startsWith("/admin")) {
             HttpSession session = req.getSession(false);
-            User user = (session != null) ? (User) session.getAttribute("oturumUser") : null;
+            UserDto user = (UserDto) session.getAttribute("oturumUser");
 
             if (user == null || user.getRole() != Role.ADMIN) {
                 res.sendRedirect(req.getContextPath() + "/login");

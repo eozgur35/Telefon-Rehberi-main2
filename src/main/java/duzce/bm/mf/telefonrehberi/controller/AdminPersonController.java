@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import duzce.bm.mf.telefonrehberi.dto.DepartmentDto;
 import duzce.bm.mf.telefonrehberi.dto.SubDepartmentDto;
+import duzce.bm.mf.telefonrehberi.dto.UserDto;
 import duzce.bm.mf.telefonrehberi.entity.Person;
 import duzce.bm.mf.telefonrehberi.entity.User;
 import duzce.bm.mf.telefonrehberi.dto.PersonDto;
@@ -151,7 +152,7 @@ public class AdminPersonController {
 
     // ── Yardımcı ───────────────────────────────────────────────────────
     private boolean isAdmin(HttpSession session) {
-        User user = (User) session.getAttribute("oturumUser");
+        UserDto user = (UserDto) session.getAttribute("oturumUser");
         return user != null && user.getRole() == Role.ADMIN;
     }
 }

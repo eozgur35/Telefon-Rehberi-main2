@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ISubDepartmentService {
     public List<SubDepartmentDto> getAllSubDepartments();
+    public List<SubDepartmentDto> findByDepartment(Integer id);
 }

@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface IDepartmentService {
     public List<DepartmentDto> getAllDepartments();
+    public DepartmentDto findById(Integer id);
 }

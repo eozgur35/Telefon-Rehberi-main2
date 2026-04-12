@@ -8,4 +8,6 @@ public interface IAdminPersonService {
     public List<PersonDto> getAllPerson();
     public void savePerson(PersonDto personDto);
     public boolean deletePerson(int id);
+    public List<PersonDto> findBySubdepartmentSubDepartmentId(Integer id);
+    public List<PersonDto> findBySubdepartmentDepartmentDepartmentId(Integer id);
 }

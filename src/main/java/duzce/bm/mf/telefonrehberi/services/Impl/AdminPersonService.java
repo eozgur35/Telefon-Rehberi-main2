@@ -65,4 +65,42 @@ public class AdminPersonService implements IAdminPersonService {
         }
         return false;
     }
+
+    public List<PersonDto> findBySubdepartmentSubDepartmentId(Integer id)
+    {
+        List<Person> dbPerson = personRepository.findBySubdepartmentSubDepartmentId(id);
+
+        List<PersonDto> dtoPerson = new ArrayList<>();
+
+        for(Person p : dbPerson)
+        {
+            PersonDto newPersonDto = new PersonDto();
+            BeanUtils.copyProperties(p, newPersonDto);
+            newPersonDto.setDeptName(p.getSubdepartment().getDepartment().getName());
+            newPersonDto.setSubDeptId(p.getSubdepartment().getSubDepartmentId());
+            newPersonDto.setSubDeptName(p.getSubdepartment().getName());
+            dtoPerson.add(newPersonDto);
+        }
+
+        return dtoPerson;
+    }
+
+    public List<PersonDto> findBySubdepartmentDepartmentDepartmentId(Integer id)
+    {
+        List<Person> dbPerson = personRepository.findBySubdepartmentDepartmentDepartmentId(id);
+
+        List<PersonDto> dtoPerson = new ArrayList<>();
+
+        for(Person p : dbPerson)
+        {
+            PersonDto newPersonDto = new PersonDto();
+            BeanUtils.copyProperties(p, newPersonDto);
+            newPersonDto.setDeptName(p.getSubdepartment().getDepartment().getName());
+            newPersonDto.setSubDeptId(p.getSubdepartment().getSubDepartmentId());
+            newPersonDto.setSubDeptName(p.getSubdepartment().getName());
+            dtoPerson.add(newPersonDto);
+        }
+
+        return dtoPerson;
+    }
 }
