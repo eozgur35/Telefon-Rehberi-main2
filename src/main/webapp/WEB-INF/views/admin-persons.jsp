@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kişi Yönetimi – Yönetici Paneli</title>
     <style>
+        /* Tasarım kodların aynen korunmuştur */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f5f6f8; color: #1a1a2e; min-height: 100vh; display: flex; flex-direction: column; }
         header { background: #1a3a6b; color: #fff; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
@@ -20,21 +21,17 @@
         .admin-badge { font-size: 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; }
         .header-right a { font-size: 13px; color: rgba(255,255,255,0.85); text-decoration: none; border: 1px solid rgba(255,255,255,0.35); padding: 6px 16px; border-radius: 6px; transition: background 0.15s; }
         .header-right a:hover { background: rgba(255,255,255,0.12); }
-
         .filter-bar { background: #fff; border-bottom: 1px solid #e2e4ea; padding: 0.9rem 2rem; display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
         .filter-group { display: flex; flex-direction: column; gap: 4px; }
         .filter-group label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #6b7280; }
         .filter-group select, .filter-group input { height: 36px; border: 1px solid #d1d5db; border-radius: 7px; padding: 0 12px; font-size: 13.5px; font-family: inherit; color: #1a1a2e; background: #fff; outline: none; transition: border-color 0.15s, box-shadow 0.15s; min-width: 180px; }
         .filter-group select:focus, .filter-group input:focus { border-color: #1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,0.1); }
-
         main { flex: 1; padding: 1.5rem 2rem; }
         .alert { padding: 11px 16px; border-radius: 8px; font-size: 13.5px; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
         .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
         .alert-error   { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
-
         .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem; }
         .section-header h2 { font-size: 18px; font-weight: 600; color: #1a1a2e; }
-
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 7px; font-size: 13.5px; font-weight: 500; font-family: inherit; cursor: pointer; border: 1px solid transparent; transition: all 0.15s; text-decoration: none; }
         .btn-primary { background: #1a3a6b; color: #fff; border-color: #1a3a6b; }
         .btn-primary:hover { background: #153260; }
@@ -43,12 +40,10 @@
         .btn-danger { background: #fff; color: #b91c1c; border-color: #fecaca; }
         .btn-danger:hover { background: #fef2f2; }
         .btn-sm { padding: 5px 12px; font-size: 12.5px; }
-
         .table-card { background: #fff; border-radius: 10px; border: 1px solid #e2e4ea; overflow: hidden; }
         .table-inner-header { padding: 14px 18px; border-bottom: 1px solid #e2e4ea; display: flex; align-items: center; justify-content: space-between; }
         .table-inner-header h3 { font-size: 14px; font-weight: 600; color: #374151; }
         .count-badge { font-size: 12px; background: #eff6ff; color: #1a3a6b; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
-
         table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
         thead tr { background: #f8f9fb; }
         thead th { padding: 11px 16px; text-align: left; font-size: 11.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #6b7280; border-bottom: 1px solid #e2e4ea; white-space: nowrap; }
@@ -56,32 +51,26 @@
         tbody tr:last-child { border-bottom: none; }
         tbody tr:hover { background: #f5f8ff; }
         tbody td { padding: 11px 16px; color: #374151; vertical-align: middle; }
-
         .person-name { font-weight: 600; color: #1a1a2e; }
         .person-title { font-size: 12px; color: #6b7280; margin-top: 2px; }
         .badge-ext { display: inline-block; background: #eff6ff; color: #1a3a6b; font-weight: 600; font-size: 12px; padding: 3px 10px; border-radius: 5px; }
         .badge-room { display: inline-block; background: #f0fdf4; color: #166534; font-size: 12px; padding: 3px 9px; border-radius: 5px; }
         .td-actions { display: flex; gap: 8px; align-items: center; }
-
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; padding: 1rem; overflow-y: auto; }
         .modal-overlay.open { display: flex; }
         .modal { background: #fff; border-radius: 12px; border: 1px solid #e2e4ea; padding: 2rem; width: 100%; max-width: 540px; box-shadow: 0 8px 40px rgba(0,0,0,0.15); margin: auto; }
         .modal h3 { font-size: 17px; font-weight: 600; margin-bottom: 4px; color: #1a1a2e; }
         .modal > p { font-size: 13px; color: #6b7280; margin-bottom: 1.5rem; }
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #f3f4f6; }
-
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         .form-grid .full { grid-column: 1 / -1; }
         .form-group { display: flex; flex-direction: column; gap: 5px; }
         .form-group label { font-size: 12.5px; font-weight: 600; color: #374151; }
         .form-group input, .form-group select { height: 40px; border: 1px solid #d1d5db; border-radius: 7px; padding: 0 12px; font-size: 14px; font-family: inherit; color: #1a1a2e; background: #fff; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
         .form-group input:focus, .form-group select:focus { border-color: #1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,0.1); }
-
         .delete-warning { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 16px; font-size: 13.5px; color: #b91c1c; margin-bottom: 1rem; }
-
         footer { background: #1a3a6b; color: rgba(255,255,255,0.65); text-align: center; padding: 14px 2rem; font-size: 12px; }
         footer span { color: rgba(255,255,255,0.9); font-weight: 500; }
-
         @media (max-width: 768px) {
             main { padding: 1rem; }
             .filter-bar { padding: 0.9rem 1rem; }
@@ -165,7 +154,6 @@
             </tr>
             </thead>
             <tbody id="personTable">
-
             <c:choose>
                 <c:when test="${empty kisiler}">
                     <tr>
@@ -174,10 +162,11 @@
                 </c:when>
                 <c:otherwise>
                     <c:forEach var="k" items="${kisiler}">
+                        <%-- DÜZENLEME: DTO alanları yerine Model ilişkileri kullanıldı --%>
                         <tr class="person-row"
                             data-name="${k.firstName} ${k.lastName}"
                             data-ext="${not empty k.extensionNumber ? k.extensionNumber : ''}"
-                            data-dept="${not empty k.deptName ? k.deptName : ''}"
+                            data-dept="${not empty k.subDepartment.department.name ? k.subDepartment.department.name : ''}"
                             data-person-id="${k.personId}"
                             data-first-name="${k.firstName}"
                             data-last-name="${k.lastName}"
@@ -185,14 +174,14 @@
                             data-extension="${not empty k.extensionNumber ? k.extensionNumber : ''}"
                             data-room="${not empty k.roomNumber ? k.roomNumber : ''}"
                             data-email="${not empty k.email ? k.email : ''}"
-                            data-sub-id="${not empty k.subDeptId ? k.subDeptId : 0}">
+                            data-sub-id="${not empty k.subDepartment.subDepartmentId ? k.subDepartment.subDepartmentId : 0}">
 
                             <td>
                                 <div class="person-name">${k.firstName} ${k.lastName}</div>
                                 <div class="person-title">${k.titleName}</div>
                             </td>
-                            <td>${not empty k.deptName ? k.deptName : '—'}</td>
-                            <td>${not empty k.subDeptName ? k.subDeptName : '—'}</td>
+                            <td>${not empty k.subDepartment.department.name ? k.subDepartment.department.name : '—'}</td>
+                            <td>${not empty k.subDepartment.name ? k.subDepartment.name : '—'}</td>
                             <td>
                                 <c:choose>
                                     <c:when test="${not empty k.roomNumber}">
@@ -240,30 +229,12 @@
         <p>Kişinin bilgilerini doldurun.</p>
         <form action="/admin/persons/ekle" method="post">
             <div class="form-grid">
-                <div class="form-group">
-                    <label>Ad</label>
-                    <input type="text" name="firstName" placeholder="Ahmet" required>
-                </div>
-                <div class="form-group">
-                    <label>Soyad</label>
-                    <input type="text" name="lastName" placeholder="Yılmaz" required>
-                </div>
-                <div class="form-group full">
-                    <label>Unvan</label>
-                    <input type="text" name="titleName" placeholder="Doç. Dr., Öğr. Gör., ...">
-                </div>
-                <div class="form-group">
-                    <label>Dahili No</label>
-                    <input type="text" name="extensionNumber" placeholder="1234">
-                </div>
-                <div class="form-group">
-                    <label>Oda No</label>
-                    <input type="text" name="roomNumber" placeholder="A-201">
-                </div>
-                <div class="form-group full">
-                    <label>E-posta</label>
-                    <input type="email" name="email" placeholder="ahmet@kurum.edu.tr">
-                </div>
+                <div class="form-group"><label>Ad</label><input type="text" name="firstName" placeholder="Ahmet" required></div>
+                <div class="form-group"><label>Soyad</label><input type="text" name="lastName" placeholder="Yılmaz" required></div>
+                <div class="form-group full"><label>Unvan</label><input type="text" name="titleName" placeholder="Doç. Dr., Öğr. Gör., ..."></div>
+                <div class="form-group"><label>Dahili No</label><input type="text" name="extensionNumber" placeholder="1234"></div>
+                <div class="form-group"><label>Oda No</label><input type="text" name="roomNumber" placeholder="A-201"></div>
+                <div class="form-group full"><label>E-posta</label><input type="email" name="email" placeholder="ahmet@kurum.edu.tr"></div>
                 <div class="form-group">
                     <label>Birim</label>
                     <select id="ekle-deptSelect" onchange="loadSubDepts('ekle-deptSelect','ekle-subSelect')">
@@ -275,9 +246,7 @@
                 </div>
                 <div class="form-group">
                     <label>Bölüm</label>
-                    <select id="ekle-subSelect" name="subDepartmentId">
-                        <option value="">— Önce Birim Seçin —</option>
-                    </select>
+                    <select id="ekle-subSelect" name="subDepartmentId"><option value="">— Önce Birim Seçin —</option></select>
                 </div>
             </div>
             <div class="modal-footer">
@@ -295,30 +264,12 @@
         <form action="/admin/persons/guncelle" method="post">
             <input type="hidden" name="personId" id="editPersonId">
             <div class="form-grid">
-                <div class="form-group">
-                    <label>Ad</label>
-                    <input type="text" name="firstName" id="editFirstName" required>
-                </div>
-                <div class="form-group">
-                    <label>Soyad</label>
-                    <input type="text" name="lastName" id="editLastName" required>
-                </div>
-                <div class="form-group full">
-                    <label>Unvan</label>
-                    <input type="text" name="titleName" id="editTitleName">
-                </div>
-                <div class="form-group">
-                    <label>Dahili No</label>
-                    <input type="text" name="extensionNumber" id="editExtension">
-                </div>
-                <div class="form-group">
-                    <label>Oda No</label>
-                    <input type="text" name="roomNumber" id="editRoom">
-                </div>
-                <div class="form-group full">
-                    <label>E-posta</label>
-                    <input type="email" name="email" id="editEmail">
-                </div>
+                <div class="form-group"><label>Ad</label><input type="text" name="firstName" id="editFirstName" required></div>
+                <div class="form-group"><label>Soyad</label><input type="text" name="lastName" id="editLastName" required></div>
+                <div class="form-group full"><label>Unvan</label><input type="text" name="titleName" id="editTitleName"></div>
+                <div class="form-group"><label>Dahili No</label><input type="text" name="extensionNumber" id="editExtension"></div>
+                <div class="form-group"><label>Oda No</label><input type="text" name="roomNumber" id="editRoom"></div>
+                <div class="form-group full"><label>E-posta</label><input type="email" name="email" id="editEmail"></div>
                 <div class="form-group">
                     <label>Birim</label>
                     <select id="edit-deptSelect" onchange="loadSubDepts('edit-deptSelect','edit-subSelect')">
@@ -330,9 +281,7 @@
                 </div>
                 <div class="form-group">
                     <label>Bölüm</label>
-                    <select id="edit-subSelect" name="subDepartmentId">
-                        <option value="">— Önce Birim Seçin —</option>
-                    </select>
+                    <select id="edit-subSelect" name="subDepartmentId"><option value="">— Önce Birim Seçin —</option></select>
                 </div>
             </div>
             <div class="modal-footer">
@@ -360,8 +309,7 @@
 </div>
 
 <script>
-    // Controller'dan gönderilen JSON verisini JavaScript değişkenine alıyoruz
-    // (Eğer Controller'da ObjectMapper silmediysen subDepartmentsJson olarak gelir)
+    // DÜZENLEME: Model hiyerarşisine uygun JSON eşleştirmesi
     const allSubDepts = ${not empty subDepartmentsJson ? subDepartmentsJson : '[]'};
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
@@ -376,8 +324,9 @@
         const subSel = document.getElementById(subSelId);
         subSel.innerHTML = '<option value="">— Bölüm Seç —</option>';
         if (!deptId) return;
+
         allSubDepts
-            .filter(s => s.departmentId === deptId)
+            .filter(s => s.department.departmentId === deptId) // Model yapısına göre güncellendi
             .forEach(s => {
                 const opt = document.createElement('option');
                 opt.value = s.subDepartmentId;
@@ -401,7 +350,7 @@
         const subId = d.subId || '0';
         const sub   = allSubDepts.find(s => s.subDepartmentId === parseInt(subId));
         if (sub) {
-            document.getElementById('edit-deptSelect').value = sub.departmentId;
+            document.getElementById('edit-deptSelect').value = sub.department.departmentId;
             loadSubDepts('edit-deptSelect', 'edit-subSelect', subId);
         } else {
             document.getElementById('edit-deptSelect').value = '';
@@ -435,10 +384,8 @@
                 row.style.display = 'none';
             }
         });
-
         document.getElementById('resultCount').querySelector('span').textContent = visible;
     }
 </script>
-
 </body>
 </html>

@@ -1,8 +1,7 @@
 package duzce.bm.mf.telefonrehberi.filter;
 
-import duzce.bm.mf.telefonrehberi.dto.UserDto;
-import duzce.bm.mf.telefonrehberi.entity.User;
 import duzce.bm.mf.telefonrehberi.enums.Role;
+import duzce.bm.mf.telefonrehberi.model.User; // DTO yerine Model import edildi
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import org.springframework.stereotype.Component;
@@ -12,7 +11,6 @@ import java.io.IOException;
 /**
  * /admin/** yollarını korur.
  * Giriş yapmamış veya ADMIN rolü olmayan kullanıcıları /login'e yönlendirir.
- * Spring Security kullanmıyorsak bu filter yeterli.
  */
 @Component
 public class AdminSessionFilter implements Filter {
@@ -26,9 +24,11 @@ public class AdminSessionFilter implements Filter {
 
         String path = req.getRequestURI();
 
-        if (path.startsWith("/admin")) {
+        // Admin yollarına erisim kontrolu
+        if (path.startsWith(req.getContextPath() + "/admin")) {
             HttpSession session = req.getSession(false);
-            UserDto user = (UserDto) session.getAttribute("oturumUser");
+
+            User user = (session != null) ? (User) session.getAttribute("oturumUser") : null;
 
             if (user == null || user.getRole() != Role.ADMIN) {
                 res.sendRedirect(req.getContextPath() + "/login");

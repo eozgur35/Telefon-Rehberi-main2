@@ -1,30 +1,19 @@
-package duzce.bm.mf.telefonrehberi.controller;
+package duzce.bm.mf.telefonrehberi.web;
 
-import duzce.bm.mf.telefonrehberi.dto.UserDto;
-import duzce.bm.mf.telefonrehberi.entity.User;
+import duzce.bm.mf.telefonrehberi.model.User;
 import duzce.bm.mf.telefonrehberi.enums.Role;
-import duzce.bm.mf.telefonrehberi.repository.UserRepository;
-import duzce.bm.mf.telefonrehberi.services.Impl.UserService;
+import duzce.bm.mf.telefonrehberi.services.IUserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.Optional;
 
 @Controller
 public class AuthController {
 
-//    private final UserRepository userRepository;
-
-//    public AuthController(UserRepository userRepository) {
-//        this.userRepository = userRepository;
-//    }
-
     @Autowired
-    UserService userService;
+    private IUserService userService;
 
     // ── Login sayfasını göster ──────────────────────────────────────────
     @GetMapping("/login")
@@ -45,32 +34,25 @@ public class AuthController {
                            HttpSession session,
                            Model model) {
 
-//        Optional<User> userOpt = userRepository.findByEmail(email);
-        UserDto userDto = userService.findByEmail(email);
-        if (userDto == null) {
-            model.addAttribute("hata", "Bu e-posta adresiyle kayıtlı kullanıcı bulunamadı.");
-            model.addAttribute("girisEmail", email);
-            return "login";
-        }
+        // Doğrudan veritabanından e-posta ve şifre ile eşleşen kullanıcıyı arıyoruz
+        User user = userService.login(email, password);
 
-
-        // Şifre kontrolü — BCrypt kullanıyorsan aşağıya bak (PasswordEncoder versiyonu)
-        if (!userDto.getPassword().equals(password)) {
-            model.addAttribute("hata", "Şifre hatalı. Lütfen tekrar deneyin.");
+        if (user == null) {
+            model.addAttribute("hata", "E-posta adresi veya şifre hatalı. Lütfen tekrar deneyin.");
             model.addAttribute("girisEmail", email);
             return "login";
         }
 
         // Sadece ADMIN girebilir
-        if (userDto.getRole() != Role.ADMIN) {
+        if (user.getRole() != Role.ADMIN) {
             model.addAttribute("hata", "Bu sisteme yalnızca yöneticiler giriş yapabilir.");
             model.addAttribute("girisEmail", email);
             return "login";
         }
 
-        // Session'a kaydet
-        session.setAttribute("oturumUser", userDto);
-        session.setAttribute("oturumEmail", userDto.getEmail());
+        // Session'a Entity (Model) nesnemizi kaydediyoruz
+        session.setAttribute("oturumUser", user);
+        session.setAttribute("oturumEmail", user.getEmail());
 
         return "redirect:/admin/persons";
     }
@@ -79,6 +61,6 @@ public class AuthController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/login";  // /login'e yönlendir, / değil
+        return "redirect:/login";
     }
 }

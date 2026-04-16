@@ -1,60 +1,52 @@
 package duzce.bm.mf.telefonrehberi.services.Impl;
 
-import duzce.bm.mf.telefonrehberi.dto.DepartmentDto;
-import duzce.bm.mf.telefonrehberi.dto.SubDepartmentDto;
-import duzce.bm.mf.telefonrehberi.entity.Department;
-import duzce.bm.mf.telefonrehberi.entity.SubDepartment;
-import duzce.bm.mf.telefonrehberi.repository.SubDepartmentRepository;
+import duzce.bm.mf.telefonrehberi.dao.SubDepartmentDao;
+import duzce.bm.mf.telefonrehberi.model.SubDepartment;
 import duzce.bm.mf.telefonrehberi.services.ISubDepartmentService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Transactional(propagation = Propagation.REQUIRED, readOnly = true, rollbackFor = RuntimeException.class)
 public class SubDepartmentService implements ISubDepartmentService {
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    SubDepartmentRepository subDepartmentRepository;
+    private SubDepartmentDao subDepartmentDao;
 
-    public List<SubDepartmentDto> getAllSubDepartments()
-    {
-        List<SubDepartment> subDepartments = subDepartmentRepository.findAll();
-        List<SubDepartmentDto> subDepartmentDtoList = new ArrayList<>();
-        for (SubDepartment dbDepartment : subDepartments)
-        {
-            SubDepartmentDto subDepartmentDto = new SubDepartmentDto();
-            BeanUtils.copyProperties(dbDepartment, subDepartmentDto);
-            subDepartmentDto.setDepartmentId(dbDepartment.getDepartment().getDepartmentId());
-            subDepartmentDtoList.add(subDepartmentDto);
-        }
-
-        return subDepartmentDtoList;
+    @Override
+    public List<SubDepartment> getAllSubDepartments() {
+        return subDepartmentDao.subDepartmentleriYukle();
     }
 
-    public List<SubDepartmentDto> findByDepartment(Integer id) {
-        Department tempDept = new Department();
-        tempDept.setDepartmentId(id);
+    @Override
+    @Transactional(readOnly = false)
+    public void saveSubDepartment(SubDepartment subDepartment) {
+        subDepartmentDao.saveOrUpdate(subDepartment);
+    }
 
-        List<SubDepartment> subDepartments = subDepartmentRepository.findByDepartment(tempDept);
-
-        List<SubDepartmentDto> subDepartmentDtoList = new ArrayList<>();
-
-        for (SubDepartment sd : subDepartments) {
-            SubDepartmentDto dto = new SubDepartmentDto();
-
-            BeanUtils.copyProperties(sd, dto);
-
-            if (sd.getDepartment() != null) {
-                dto.setDepartmentId(sd.getDepartment().getDepartmentId());
-            }
-
-            subDepartmentDtoList.add(dto);
+    @Override
+    @Transactional(readOnly = false)
+    public boolean deleteSubDepartment(int id) {
+        try {
+            subDepartmentDao.delete(id);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
+    }
 
-        return subDepartmentDtoList;
+    @Override
+    public SubDepartment getSubDepartmentById(int id) {
+        return subDepartmentDao.getById(id);
+    }
+
+    @Override
+    public List<SubDepartment> getSubDepartmentsByDepartmentId(int departmentId) {
+        return subDepartmentDao.findByDepartmentId(departmentId);
     }
 }

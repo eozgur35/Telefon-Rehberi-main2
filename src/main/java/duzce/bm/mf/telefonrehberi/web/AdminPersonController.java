@@ -1,55 +1,50 @@
-package duzce.bm.mf.telefonrehberi.controller;
+package duzce.bm.mf.telefonrehberi.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import duzce.bm.mf.telefonrehberi.dto.DepartmentDto;
-import duzce.bm.mf.telefonrehberi.dto.SubDepartmentDto;
-import duzce.bm.mf.telefonrehberi.dto.UserDto;
-import duzce.bm.mf.telefonrehberi.entity.Person;
-import duzce.bm.mf.telefonrehberi.entity.User;
-import duzce.bm.mf.telefonrehberi.dto.PersonDto;
+import duzce.bm.mf.telefonrehberi.model.Department;
+import duzce.bm.mf.telefonrehberi.model.Person;
+import duzce.bm.mf.telefonrehberi.model.SubDepartment;
+import duzce.bm.mf.telefonrehberi.model.User;
 import duzce.bm.mf.telefonrehberi.enums.Role;
-import duzce.bm.mf.telefonrehberi.repository.DepartmentRepository;
-import duzce.bm.mf.telefonrehberi.repository.PersonRepository;
-import duzce.bm.mf.telefonrehberi.repository.SubDepartmentRepository;
 import duzce.bm.mf.telefonrehberi.services.IAdminPersonService;
-import duzce.bm.mf.telefonrehberi.services.Impl.AdminPersonService;
-import duzce.bm.mf.telefonrehberi.services.Impl.DepartmentService;
-import duzce.bm.mf.telefonrehberi.services.Impl.SubDepartmentService;
+import duzce.bm.mf.telefonrehberi.services.IDepartmentService;
+import duzce.bm.mf.telefonrehberi.services.ISubDepartmentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin/persons")
 public class AdminPersonController {
 
+    // Spring Boot'un otomatik verdiği nesne yerine manuel oluşturuyoruz
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @Autowired
-    private ObjectMapper objectMapper;
+    private IAdminPersonService adminPersonService;
+
     @Autowired
-    AdminPersonService adminPersonService;
+    private ISubDepartmentService subDepartmentService;
+
     @Autowired
-    SubDepartmentService subDepartmentService;
-    @Autowired
-    DepartmentService departmentService;
+    private IDepartmentService departmentService;
 
     // ── Kişi listesi ───────────────────────────────────────────────────
     @GetMapping
     public String personListesi(HttpSession session, Model model) {
         if (!isAdmin(session)) return "redirect:/login";
-        List<PersonDto> kisiler = adminPersonService.getAllPerson();
 
-        // Alt birimleri JS için hazırlıyoruz
-        List<SubDepartmentDto> subList = subDepartmentService.getAllSubDepartments();
-        List<DepartmentDto> deptList = departmentService.getAllDepartments();
-        // JSON'A ÇEVİRMEDEN doğrudan listeyi model'e ekliyoruz:
+        // DTO yerine doğrudan Model listelerini çekiyoruz
+        List<Person> kisiler = adminPersonService.getAllPerson();
+        List<SubDepartment> subList = subDepartmentService.getAllSubDepartments();
+        List<Department> deptList = departmentService.getAllDepartments();
+
         model.addAttribute("subDepartments", subList);
 
         try {
@@ -61,6 +56,10 @@ public class AdminPersonController {
         model.addAttribute("kisiler", kisiler);
         model.addAttribute("departments", deptList);
         model.addAttribute("oturumEmail", session.getAttribute("oturumEmail"));
+
+        System.out.println("Kişi sayısı: " + kisiler.size());
+        System.out.println("Birim sayısı: " + deptList.size());
+        System.out.println("Bölüm sayısı: " + subList.size());
 
         return "admin-persons";
     }
@@ -77,31 +76,31 @@ public class AdminPersonController {
                              HttpSession session,
                              RedirectAttributes ra) {
 
-        if (!isAdmin(session))
-            return "redirect:/login";
+        if (!isAdmin(session)) return "redirect:/login";
 
-        PersonDto personDto = new PersonDto(
-            0,
-                firstName,
-                lastName,
-                titleName,
-                extensionNumber,
-                roomNumber,
-                email,
-                null,
-                subDepartmentId,
-                null
-        );
+        // DTO yerine Person Entity oluşturuyoruz
+        Person person = new Person();
+        person.setFirstName(firstName);
+        person.setLastName(lastName);
+        person.setTitleName(titleName);
+        person.setExtensionNumber(extensionNumber);
+        person.setRoomNumber(roomNumber);
+        person.setEmail(email);
 
+        // Veritabanı ilişkisi olduğu için ID yerine doğrudan SubDepartment nesnesini bularak bağlıyoruz
+        if (subDepartmentId != null) {
+            SubDepartment subDepartment = subDepartmentService.getSubDepartmentById(subDepartmentId);
+            person.setSubDepartment(subDepartment);
+        }
 
-        adminPersonService.savePerson(personDto);
+        adminPersonService.savePerson(person);
         ra.addFlashAttribute("mesaj", firstName + " " + lastName + " başarıyla eklendi.");
         return "redirect:/admin/persons";
     }
 
     // ── Kişi güncelle ──────────────────────────────────────────────────
     @PostMapping("/guncelle")
-    public String personGuncelle(@RequestParam("personId") int personId,
+    public String personGuncelle(@RequestParam("personId") Integer personId,
                                  @RequestParam("firstName") String firstName,
                                  @RequestParam("lastName") String lastName,
                                  @RequestParam(value = "titleName", required = false) String titleName,
@@ -113,21 +112,22 @@ public class AdminPersonController {
                                  RedirectAttributes ra) {
 
         if (!isAdmin(session)) return "redirect:/login";
-        PersonDto personDto = new PersonDto(
-                personId,
-                firstName,
-                lastName,
-                titleName,
-                extensionNumber,
-                roomNumber,
-                email,
-                null,
-                subDepartmentId,
-                null
-        );
 
+        Person person = new Person();
+        person.setPersonId(personId); // Güncelleme olduğu için ID'sini de atıyoruz
+        person.setFirstName(firstName);
+        person.setLastName(lastName);
+        person.setTitleName(titleName);
+        person.setExtensionNumber(extensionNumber);
+        person.setRoomNumber(roomNumber);
+        person.setEmail(email);
 
-        adminPersonService.savePerson(personDto);
+        if (subDepartmentId != null) {
+            SubDepartment subDepartment = subDepartmentService.getSubDepartmentById(subDepartmentId);
+            person.setSubDepartment(subDepartment);
+        }
+
+        adminPersonService.savePerson(person);
         ra.addFlashAttribute("mesaj", firstName + " " + lastName + " başarıyla güncellendi.");
         return "redirect:/admin/persons";
     }
@@ -142,7 +142,7 @@ public class AdminPersonController {
 
         boolean sonuc = adminPersonService.deletePerson(personId);
         if (sonuc) {
-            ra.addFlashAttribute("mesaj", personId + " " + "numaraali kisi" + " silindi.");
+            ra.addFlashAttribute("mesaj", personId + " numaralı kişi silindi.");
         } else {
             ra.addFlashAttribute("hata", "Silinecek kişi bulunamadı.");
         }
@@ -152,7 +152,8 @@ public class AdminPersonController {
 
     // ── Yardımcı ───────────────────────────────────────────────────────
     private boolean isAdmin(HttpSession session) {
-        UserDto user = (UserDto) session.getAttribute("oturumUser");
+        // DTO yerine User modeli üzerinden kontrol ediyoruz
+        User user = (User) session.getAttribute("oturumUser");
         return user != null && user.getRole() == Role.ADMIN;
     }
 }

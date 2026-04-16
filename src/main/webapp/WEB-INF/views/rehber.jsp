@@ -9,7 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telefon Rehberi</title>
     <style>
-        /* CSS KODLARININ TAMAMINI BURAYA YAPIŞTIR (Yukarıdaki HTML'de olan CSS'in aynısı) */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f5f6f8; color: #1a1a2e; min-height: 100vh; display: flex; flex-direction: column; }
         header { background: #1a3a6b; color: #fff; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
@@ -167,16 +166,16 @@
                             </td>
                             <td>
                                 <c:choose>
-                                    <c:when test="${not empty kisi.deptName}">
-                                        ${kisi.deptName}
+                                    <c:when test="${not empty kisi.subDepartment.department.name}">
+                                        ${kisi.subDepartment.department.name}
                                     </c:when>
                                     <c:otherwise>—</c:otherwise>
                                 </c:choose>
                             </td>
                             <td>
                                 <c:choose>
-                                    <c:when test="${not empty kisi.subDeptName}">
-                                        ${kisi.subDeptName}
+                                    <c:when test="${not empty kisi.subDepartment.name}">
+                                        ${kisi.subDepartment.name}
                                     </c:when>
                                     <c:otherwise>—</c:otherwise>
                                 </c:choose>
@@ -223,7 +222,6 @@
 </footer>
 
 <script>
-    // JS KODLARININ TAMAMINI BURAYA YAPIŞTIR (Yukarıdaki HTML'de olan JS'in aynısı)
     function liveSearch(val) {
         const q = val.toLowerCase().trim();
         const rows = document.querySelectorAll('#personTable .person-row');

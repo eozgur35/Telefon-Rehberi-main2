@@ -1,7 +1,11 @@
 package duzce.bm.mf.telefonrehberi.services;
 
-import duzce.bm.mf.telefonrehberi.dto.UserDto;
+import duzce.bm.mf.telefonrehberi.model.User;
+import java.util.List;
 
 public interface IUserService {
-    public UserDto findByEmail(String email);
+    List<User> getAllUsers();
+    void saveUser(User user);
+    boolean deleteUser(int id);
+    User login(String email, String password);
 }

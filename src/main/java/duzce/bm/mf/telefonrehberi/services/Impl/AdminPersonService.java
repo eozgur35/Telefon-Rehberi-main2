@@ -1,106 +1,52 @@
 package duzce.bm.mf.telefonrehberi.services.Impl;
 
-import duzce.bm.mf.telefonrehberi.dto.PersonDto;
-import duzce.bm.mf.telefonrehberi.entity.Person;
-import duzce.bm.mf.telefonrehberi.entity.SubDepartment;
-import duzce.bm.mf.telefonrehberi.repository.PersonRepository;
-import duzce.bm.mf.telefonrehberi.repository.SubDepartmentRepository;
+import duzce.bm.mf.telefonrehberi.dao.PersonDao;
+import duzce.bm.mf.telefonrehberi.model.Person;
 import duzce.bm.mf.telefonrehberi.services.IAdminPersonService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Transactional(propagation = Propagation.REQUIRED, readOnly = true, rollbackFor = RuntimeException.class)
 public class AdminPersonService implements IAdminPersonService {
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    PersonRepository personRepository;
+    private PersonDao personDao;
 
-    @Autowired
-    SubDepartmentRepository subDepartmentRepository;
-
-    public List<PersonDto> getAllPerson()
-    {
-        List<Person> dbPerson = personRepository.findAll();
-
-        List<PersonDto> dtoPerson = new ArrayList<>();
-
-        for(Person p : dbPerson)
-        {
-            PersonDto newPersonDto = new PersonDto();
-            BeanUtils.copyProperties(p, newPersonDto);
-            newPersonDto.setDeptName(p.getSubdepartment().getDepartment().getName());
-            newPersonDto.setSubDeptId(p.getSubdepartment().getSubDepartmentId());
-            newPersonDto.setSubDeptName(p.getSubdepartment().getName());
-            dtoPerson.add(newPersonDto);
-        }
-
-        return dtoPerson;
+    @Override
+    public List<Person> getAllPerson() {
+        return personDao.personelleriYukle();
     }
 
-    public void savePerson(PersonDto personDto)
-    {
-        Person p = new Person();
-
-        BeanUtils.copyProperties(personDto, p);
-        Optional<SubDepartment> optionalSubDepartment = subDepartmentRepository.findById(personDto.getSubDeptId());
-
-        if(optionalSubDepartment.isPresent()) // isPresent calismazsa !isEmpty kullaniin
-        {
-            p.setSubdepartment(optionalSubDepartment.get());
-        }
-
-        personRepository.save(p);
+    @Override
+    @Transactional(readOnly = false)
+    public void savePerson(Person person) {
+        personDao.saveOrUpdate(person);
     }
 
-    public boolean deletePerson(int id)
-    {
-        if(personRepository.existsById(id))
-        {
-            personRepository.deleteById(id);
+    @Override
+    @Transactional(readOnly = false)
+    public boolean deletePerson(int id) {
+        try {
+            personDao.delete(id);
             return true;
+        } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
-    public List<PersonDto> findBySubdepartmentSubDepartmentId(Integer id)
-    {
-        List<Person> dbPerson = personRepository.findBySubdepartmentSubDepartmentId(id);
-
-        List<PersonDto> dtoPerson = new ArrayList<>();
-
-        for(Person p : dbPerson)
-        {
-            PersonDto newPersonDto = new PersonDto();
-            BeanUtils.copyProperties(p, newPersonDto);
-            newPersonDto.setDeptName(p.getSubdepartment().getDepartment().getName());
-            newPersonDto.setSubDeptId(p.getSubdepartment().getSubDepartmentId());
-            newPersonDto.setSubDeptName(p.getSubdepartment().getName());
-            dtoPerson.add(newPersonDto);
-        }
-
-        return dtoPerson;
+    @Override
+    public List<Person> findBySubDepartmentId(Integer id) {
+        return personDao.findBySubDepartmentId(id);
     }
 
-    public List<PersonDto> findBySubdepartmentDepartmentDepartmentId(Integer id)
-    {
-        List<Person> dbPerson = personRepository.findBySubdepartmentDepartmentDepartmentId(id);
-
-        List<PersonDto> dtoPerson = new ArrayList<>();
-
-        for(Person p : dbPerson)
-        {
-            PersonDto newPersonDto = new PersonDto();
-            BeanUtils.copyProperties(p, newPersonDto);
-            newPersonDto.setDeptName(p.getSubdepartment().getDepartment().getName());
-            newPersonDto.setSubDeptId(p.getSubdepartment().getSubDepartmentId());
-            newPersonDto.setSubDeptName(p.getSubdepartment().getName());
-            dtoPerson.add(newPersonDto);
-        }
-
-        return dtoPerson;
+    @Override
+    public List<Person> findByDepartmentId(Integer id) {
+        return personDao.findByDepartmentId(id);
     }
 }

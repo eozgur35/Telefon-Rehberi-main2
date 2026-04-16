@@ -1,49 +1,47 @@
 package duzce.bm.mf.telefonrehberi.services.Impl;
 
-import duzce.bm.mf.telefonrehberi.dto.DepartmentDto;
-import duzce.bm.mf.telefonrehberi.entity.Department;
-import duzce.bm.mf.telefonrehberi.repository.DepartmentRepository;
+import duzce.bm.mf.telefonrehberi.dao.DepartmentDao;
+import duzce.bm.mf.telefonrehberi.model.Department;
 import duzce.bm.mf.telefonrehberi.services.IDepartmentService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Transactional(propagation = Propagation.REQUIRED, readOnly = true, rollbackFor = RuntimeException.class)
 public class DepartmentService implements IDepartmentService {
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    DepartmentRepository departmentRepository;
+    private DepartmentDao departmentDao;
 
-    public List<DepartmentDto> getAllDepartments()
-    {
-        List<Department> dbDepartments = departmentRepository.findAll();
-        List<DepartmentDto> dtoDepartments = new ArrayList<>();
-
-        for (Department d : dbDepartments)
-        {
-            DepartmentDto newDepartmentDto = new DepartmentDto();
-            BeanUtils.copyProperties(d, newDepartmentDto);
-            dtoDepartments.add(newDepartmentDto);
-        }
-
-        return dtoDepartments;
+    @Override
+    public List<Department> getAllDepartments() {
+        return departmentDao.departmentleriYukle();
     }
 
-    public DepartmentDto findById(Integer id)
-    {
-        Optional<Department> dbDepartment = departmentRepository.findById(id);
+    @Override
+    @Transactional(readOnly = false)
+    public void saveDepartment(Department department) {
+        departmentDao.saveOrUpdate(department);
+    }
 
-        if(dbDepartment.isPresent())
-        {
-            DepartmentDto dto = new DepartmentDto();
-            BeanUtils.copyProperties(dbDepartment.get(), dto);
-
-            return dto;
+    @Override
+    @Transactional(readOnly = false)
+    public boolean deleteDepartment(int id) {
+        try {
+            departmentDao.delete(id);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
+    }
 
-        return null;
+    @Override
+    public Department getDepartmentById(int id) {
+        return departmentDao.getById(id);
     }
 }
