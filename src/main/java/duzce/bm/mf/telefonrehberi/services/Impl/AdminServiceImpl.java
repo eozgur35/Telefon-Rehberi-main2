@@ -3,6 +3,9 @@ package duzce.bm.mf.telefonrehberi.services.Impl;
 import duzce.bm.mf.telefonrehberi.dto.PersonDto;
 import duzce.bm.mf.telefonrehberi.entity.Person;
 import duzce.bm.mf.telefonrehberi.entity.SubDepartment;
+import duzce.bm.mf.telefonrehberi.exception.BadRequestException;
+import duzce.bm.mf.telefonrehberi.exception.DatabaseException;
+import duzce.bm.mf.telefonrehberi.exception.ResourceNotFoundException;
 import duzce.bm.mf.telefonrehberi.repository.PersonRepository;
 import duzce.bm.mf.telefonrehberi.repository.SubDepartmentRepository;
 import duzce.bm.mf.telefonrehberi.services.AdminService;
@@ -23,78 +26,128 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     SubDepartmentRepository subDepartmentRepository;
 
+    @Override
     public List<PersonDto> getAllPerson() {
+
         List<Person> personList = personRepository.findAll();
         List<PersonDto> personDto = new ArrayList<>();
 
         for (Person person : personList) {
             PersonDto newPersonDto = new PersonDto();
             BeanUtils.copyProperties(person, newPersonDto);
+
             newPersonDto.setDeptName(person.getSubdepartment().getDepartment().getName());
             newPersonDto.setSubDeptId(person.getSubdepartment().getSubDepartmentId());
             newPersonDto.setSubDeptName(person.getSubdepartment().getName());
+
             personDto.add(newPersonDto);
         }
         return personDto;
     }
 
-    //hoca ekleme
+    @Override
     public void savePerson(PersonDto personDto) {
-        Person person = new Person();
-        BeanUtils.copyProperties(personDto, person);
-        Optional<SubDepartment> optionalSubDepartment = subDepartmentRepository.findById(personDto.getSubDeptId());
 
-        if (optionalSubDepartment.isPresent()) {
-            person.setSubdepartment(optionalSubDepartment.get());
+        // ✅ VALIDATION
+        if (personDto.getFirstName() == null || personDto.getFirstName().isBlank()) {
+            throw new BadRequestException("İsim boş olamaz");
         }
-        personRepository.save(person);
+
+        if (personDto.getLastName() == null || personDto.getLastName().isBlank()) {
+            throw new BadRequestException("Soyisim boş olamaz");
+        }
+
+        try {
+            Person person = new Person();
+            BeanUtils.copyProperties(personDto, person);
+
+            SubDepartment subDepartment = subDepartmentRepository.findById(personDto.getSubDeptId())
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException("SubDepartment bulunamadı"));
+
+            person.setSubdepartment(subDepartment);
+
+            personRepository.save(person);
+
+        } catch (Exception e) {
+            throw new DatabaseException("Person kaydedilirken hata oluştu");
+        }
     }
 
-
+    @Override
     public void updatePerson(PersonDto personDto) {
-        Person person = personRepository.findByPersonId(personDto.getPersonId());
-        BeanUtils.copyProperties(personDto, person);
-        Optional<SubDepartment> optionalSubDepartment = subDepartmentRepository.findById(personDto.getSubDeptId());
 
-        if (optionalSubDepartment.isPresent()) {
-            person.setSubdepartment(optionalSubDepartment.get());
+        Person person = personRepository.findById(personDto.getPersonId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Person bulunamadı"));
+
+        BeanUtils.copyProperties(personDto, person);
+
+        SubDepartment subDepartment = subDepartmentRepository.findById(personDto.getSubDeptId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("SubDepartment bulunamadı"));
+
+        person.setSubdepartment(subDepartment);
+
+        try {
+            personRepository.save(person);
+        } catch (Exception e) {
+            throw new DatabaseException("Person güncellenirken hata oluştu");
         }
-        personRepository.save(person);
     }
 
+    @Override
     public boolean deletePerson(int id) {
-        if (personRepository.existsById(id)) {
+
+        if (!personRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Silinecek person bulunamadı");
+        }
+
+        try {
             personRepository.deleteById(id);
             return true;
+        } catch (Exception e) {
+            throw new DatabaseException("Silme işlemi başarısız");
         }
-        return false;
     }
 
+    @Override
     public List<PersonDto> getPersonsBySubDepartmentId(int id) {
-        List<Person> personList = personRepository.findBySubdepartmentSubDepartmentId(id);
+
+        List<Person> personList =
+                personRepository.findBySubdepartmentSubDepartmentId(id);
+
         List<PersonDto> dtoPerson = new ArrayList<>();
 
         for (Person person : personList) {
             PersonDto personDto = new PersonDto();
             BeanUtils.copyProperties(person, personDto);
+
             personDto.setDeptName(person.getSubdepartment().getDepartment().getName());
             personDto.setSubDeptId(person.getSubdepartment().getSubDepartmentId());
             personDto.setSubDeptName(person.getSubdepartment().getName());
+
             dtoPerson.add(personDto);
         }
         return dtoPerson;
     }
 
+    @Override
     public List<PersonDto> getPersonsByDepartmentId(int id) {
-        List<Person> personList = personRepository.findBySubdepartmentDepartmentDepartmentId(id);
+
+        List<Person> personList =
+                personRepository.findBySubdepartmentDepartmentDepartmentId(id);
+
         List<PersonDto> personDtoList = new ArrayList<>();
 
         for (Person person : personList) {
             PersonDto personDto = new PersonDto();
             BeanUtils.copyProperties(person, personDto);
+
             personDto.setDeptName(person.getSubdepartment().getDepartment().getName());
             personDto.setSubDeptId(person.getSubdepartment().getSubDepartmentId());
             personDto.setSubDeptName(person.getSubdepartment().getName());
+
             personDtoList.add(personDto);
         }
         return personDtoList;
