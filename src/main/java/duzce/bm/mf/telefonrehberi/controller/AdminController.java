@@ -11,6 +11,8 @@ import duzce.bm.mf.telefonrehberi.services.SubDepartmentService;
 import duzce.bm.mf.telefonrehberi.util.SessionUtil;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,11 +39,11 @@ public class AdminController {
     @Autowired
     SessionUtil sessionUtil;
 
+    @Autowired
+    MessageSource messageSource;
+
     @GetMapping
     public String getPersonListPage(HttpSession session, Model model) {
-        if (!sessionUtil.isAdmin(session)) {
-            return "redirect:/login";
-        }
         List<PersonDto> personDtoList = adminPersonService.getAllPerson();
         List<SubDepartmentDto> subDepartDtoList = subDepartmentService.getAllSubDepartments();
         List<DepartmentDto> departDtoList = departmentService.getAllDepartments();
@@ -69,45 +71,41 @@ public class AdminController {
                                @RequestParam(value = "subDepartmentId", required = false) int subDepartmentId,
                                HttpSession session,
                                RedirectAttributes ra) {
-
-        if (!sessionUtil.isAdmin(session)) {
-            return "redirect:/login";
-        }
         PersonDto personDto = new PersonDto(0, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subDepartmentId, null);
-        adminPersonService.savePerson(personDto);
-        ra.addFlashAttribute("mesaj", firstName + " " + lastName + " has been added successfully.");
+        adminPersonService.saveOrUpdatePerson(personDto);
+        String message = messageSource.getMessage("person.add.success", new Object[]{firstName, lastName}, LocaleContextHolder.getLocale());
+        ra.addFlashAttribute("mesaj", message);
         return "redirect:/admin/persons";
     }
 
     @PostMapping("/update")
     public String updatePerson(@RequestParam("personId") int personId,
-                                 @RequestParam("firstName") String firstName,
-                                 @RequestParam("lastName") String lastName,
-                                 @RequestParam(value = "titleName", required = false) String titleName,
-                                 @RequestParam(value = "extensionNumber", required = false) String extensionNumber,
-                                 @RequestParam(value = "roomNumber", required = false) String roomNumber,
-                                 @RequestParam(value = "email", required = false) String email,
-                                 @RequestParam(value = "subDepartmentId", required = false) int subDepartmentId,
-                                 HttpSession session,
-                                 RedirectAttributes ra) {
+                               @RequestParam("firstName") String firstName,
+                               @RequestParam("lastName") String lastName,
+                               @RequestParam(value = "titleName", required = false) String titleName,
+                               @RequestParam(value = "extensionNumber", required = false) String extensionNumber,
+                               @RequestParam(value = "roomNumber", required = false) String roomNumber,
+                               @RequestParam(value = "email", required = false) String email,
+                               @RequestParam(value = "subDepartmentId", required = false) int subDepartmentId,
+                               HttpSession session,
+                               RedirectAttributes ra) {
 
-        if (!sessionUtil.isAdmin(session)) return "redirect:/login";
         PersonDto personDto = new PersonDto(personId, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subDepartmentId, null);
-        adminPersonService.updatePerson(personDto);
-        ra.addFlashAttribute("mesaj", firstName + " " + lastName + " has been updated successfully.");
+        adminPersonService.saveOrUpdatePerson(personDto);
+        String message = messageSource.getMessage("person.update.success", new Object[]{firstName, lastName}, LocaleContextHolder.getLocale());
+        ra.addFlashAttribute("mesaj", message);
         return "redirect:/admin/persons";
     }
 
     @PostMapping("/delete")
     public String deletePerson(@RequestParam("personId") int personId, HttpSession session, RedirectAttributes ra) {
-        if (!sessionUtil.isAdmin(session)){
-            return "redirect:/login";
-        }
         boolean isDeleted = adminPersonService.deletePerson(personId);
         if (isDeleted) {
-            ra.addFlashAttribute("mesaj", personId + " " + "was deleted.");
+            String message = messageSource.getMessage("person.delete.success", new Object[]{personId}, LocaleContextHolder.getLocale());
+            ra.addFlashAttribute("mesaj", message);
         } else {
-            ra.addFlashAttribute("hata", "Person not found.");
+            String message = messageSource.getMessage("person.notfound", null, LocaleContextHolder.getLocale());
+            ra.addFlashAttribute("hata", message);
         }
         return "redirect:/admin/persons";
     }

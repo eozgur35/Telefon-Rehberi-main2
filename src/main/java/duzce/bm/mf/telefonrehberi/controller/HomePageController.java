@@ -3,10 +3,14 @@ package duzce.bm.mf.telefonrehberi.controller;
 import duzce.bm.mf.telefonrehberi.dto.DepartmentDto;
 import duzce.bm.mf.telefonrehberi.dto.PersonDto;
 import duzce.bm.mf.telefonrehberi.dto.SubDepartmentDto;
+import duzce.bm.mf.telefonrehberi.exception.BadRequestException;
+import duzce.bm.mf.telefonrehberi.exception.DatabaseException;
+import duzce.bm.mf.telefonrehberi.exception.ResourceNotFoundException;
 import duzce.bm.mf.telefonrehberi.services.AdminService;
 import duzce.bm.mf.telefonrehberi.services.DepartmentService;
 import duzce.bm.mf.telefonrehberi.services.SubDepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,10 +25,15 @@ public class HomePageController {
 
     @Autowired
     AdminService adminPersonService;
+
     @Autowired
     DepartmentService departmentService;
+
     @Autowired
     SubDepartmentService subDepartmentService;
+
+    @Autowired
+    MessageSource messageSource;
 
 
     @GetMapping("/")

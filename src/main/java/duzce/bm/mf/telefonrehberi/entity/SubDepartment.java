@@ -1,11 +1,10 @@
 package duzce.bm.mf.telefonrehberi.entity;
 
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.util.List;
 
-@Entity
+@Entity(name = "subDepartment")
 public class SubDepartment implements Serializable {
 
     @Id
