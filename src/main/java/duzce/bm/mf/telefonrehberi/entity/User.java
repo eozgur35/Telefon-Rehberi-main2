@@ -1,11 +1,11 @@
 package duzce.bm.mf.telefonrehberi.entity;
 
 import duzce.bm.mf.telefonrehberi.enums.Role;
-import jakarta.persistence.*;
 
+import jakarta.persistence.*;
 import java.io.Serializable;
 
-@Entity
+@Entity(name = "users")
 public class User implements Serializable {
 
     @Id

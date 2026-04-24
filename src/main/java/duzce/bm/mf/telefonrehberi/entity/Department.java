@@ -1,11 +1,10 @@
 package duzce.bm.mf.telefonrehberi.entity;
 
-import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.util.List;
+import jakarta.persistence.*;
 
-@Entity
+@Entity(name = "department")
 public class Department implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

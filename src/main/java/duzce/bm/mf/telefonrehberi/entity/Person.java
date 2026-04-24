@@ -1,10 +1,9 @@
 package duzce.bm.mf.telefonrehberi.entity;
 
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 
-@Entity
+@Entity(name = "person")
 public class Person implements Serializable {
 
     @Id

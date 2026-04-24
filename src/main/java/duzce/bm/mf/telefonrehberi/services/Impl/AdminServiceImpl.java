@@ -1,30 +1,33 @@
 package duzce.bm.mf.telefonrehberi.services.Impl;
 
+import duzce.bm.mf.telefonrehberi.dao.PersonDao;
+import duzce.bm.mf.telefonrehberi.dao.SubDepartmentDao;
 import duzce.bm.mf.telefonrehberi.dto.PersonDto;
 import duzce.bm.mf.telefonrehberi.entity.Person;
 import duzce.bm.mf.telefonrehberi.entity.SubDepartment;
-import duzce.bm.mf.telefonrehberi.repository.PersonRepository;
-import duzce.bm.mf.telefonrehberi.repository.SubDepartmentRepository;
+import duzce.bm.mf.telefonrehberi.exception.ResourceNotFoundException;
 import duzce.bm.mf.telefonrehberi.services.AdminService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
+@Transactional
 @Service
 public class AdminServiceImpl implements AdminService {
 
     @Autowired
-    PersonRepository personRepository;
+    SubDepartmentDao subDepartmentDao;
 
     @Autowired
-    SubDepartmentRepository subDepartmentRepository;
+    PersonDao personDao;
 
     public List<PersonDto> getAllPerson() {
-        List<Person> personList = personRepository.findAll();
+        List<Person> personList = personDao.getAllPersons();
         List<PersonDto> personDto = new ArrayList<>();
 
         for (Person person : personList) {
@@ -38,40 +41,29 @@ public class AdminServiceImpl implements AdminService {
         return personDto;
     }
 
-    //hoca ekleme
-    public void savePerson(PersonDto personDto) {
+    public void saveOrUpdatePerson(PersonDto personDto) {
         Person person = new Person();
         BeanUtils.copyProperties(personDto, person);
-        Optional<SubDepartment> optionalSubDepartment = subDepartmentRepository.findById(personDto.getSubDeptId());
-
-        if (optionalSubDepartment.isPresent()) {
-            person.setSubdepartment(optionalSubDepartment.get());
+        SubDepartment subDepartment = subDepartmentDao.findById(personDto.getSubDeptId());
+        if (Objects.isNull(subDepartment)) {
+            throw new RuntimeException("Subdepartment bulunamadı.");
         }
-        personRepository.save(person);
-    }
+        person.setSubdepartment(subDepartment);
+        personDao.saveOrUpdate(person);
 
-
-    public void updatePerson(PersonDto personDto) {
-        Person person = personRepository.findByPersonId(personDto.getPersonId());
-        BeanUtils.copyProperties(personDto, person);
-        Optional<SubDepartment> optionalSubDepartment = subDepartmentRepository.findById(personDto.getSubDeptId());
-
-        if (optionalSubDepartment.isPresent()) {
-            person.setSubdepartment(optionalSubDepartment.get());
-        }
-        personRepository.save(person);
     }
 
     public boolean deletePerson(int id) {
-        if (personRepository.existsById(id)) {
-            personRepository.deleteById(id);
+        Person person = personDao.findById(id);
+        if(Objects.nonNull(person)) {
+            personDao.delete(person);
             return true;
         }
-        return false;
+        throw new ResourceNotFoundException("Silinecek person bulunamadı");
     }
 
     public List<PersonDto> getPersonsBySubDepartmentId(int id) {
-        List<Person> personList = personRepository.findBySubdepartmentSubDepartmentId(id);
+        List<Person> personList = personDao.findBySubdepartmentSubDepartmentId(id);
         List<PersonDto> dtoPerson = new ArrayList<>();
 
         for (Person person : personList) {
@@ -86,7 +78,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     public List<PersonDto> getPersonsByDepartmentId(int id) {
-        List<Person> personList = personRepository.findBySubdepartmentDepartmentDepartmentId(id);
+        List<Person> personList = personDao.findBySubdepartmentDepartmentDepartmentId(id);
         List<PersonDto> personDtoList = new ArrayList<>();
 
         for (Person person : personList) {
