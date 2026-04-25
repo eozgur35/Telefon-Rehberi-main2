@@ -266,5 +266,92 @@
     }
 </script>
 
+
+<!-- Yapay zeka kodu -->
+<style>
+    #ai-fab { position:fixed; bottom:24px; right:24px; width:52px; height:52px;
+        border-radius:50%; background:#1a3a6b; color:#fff; border:none; font-size:22px;
+        cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.25); z-index:1000;
+        display:flex; align-items:center; justify-content:center; }
+    #ai-panel { position:fixed; bottom:88px; right:24px; width:340px; max-height:480px;
+        background:#fff; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.18);
+        display:none; flex-direction:column; z-index:1000; overflow:hidden;
+        border:1px solid #e2e4ea; }
+    #ai-panel-header { background:#1a3a6b; color:#fff; padding:12px 16px;
+        font-weight:600; font-size:14px; display:flex; justify-content:space-between; align-items:center; }
+    #ai-panel-header button { background:none; border:none; color:#fff; font-size:18px; cursor:pointer; line-height:1; }
+    #ai-messages { flex:1; overflow-y:auto; padding:12px; display:flex;
+        flex-direction:column; gap:8px; min-height:200px; max-height:330px; }
+    .ai-msg { max-width:85%; padding:8px 12px; border-radius:8px; font-size:13px; line-height:1.5; white-space:pre-wrap; }
+    .ai-msg.user { background:#eff6ff; color:#1a3a6b; align-self:flex-end; border-bottom-right-radius:2px; }
+    .ai-msg.bot  { background:#f3f4f6; color:#374151; align-self:flex-start; border-bottom-left-radius:2px; }
+    #ai-input-row { display:flex; gap:8px; padding:10px 12px; border-top:1px solid #e2e4ea; }
+    #ai-input { flex:1; border:1px solid #d1d5db; border-radius:7px; padding:7px 10px;
+        font-size:13px; font-family:inherit; outline:none; resize:none; }
+    #ai-input:focus { border-color:#1a3a6b; }
+    #ai-send { background:#1a3a6b; color:#fff; border:none; border-radius:7px;
+        padding:7px 14px; font-size:13px; cursor:pointer; white-space:nowrap; }
+    #ai-send:disabled { opacity:0.5; cursor:not-allowed; }
+</style>
+
+<button id="ai-fab" onclick="toggleAiPanel()" title="AI Asistan">💬</button>
+
+<div id="ai-panel">
+    <div id="ai-panel-header">
+        <span>🤖 Rehber Asistanı</span>
+        <button onclick="toggleAiPanel()">×</button>
+    </div>
+    <div id="ai-messages">
+        <div class="ai-msg bot">Merhaba! Yapay zeka asistanınızım. Soru sorabilirsiniz.</div>
+    </div>
+    <div id="ai-input-row">
+        <textarea id="ai-input" rows="1" placeholder="Sorunuzu yazın..." onkeydown="aiEnter(event)"></textarea>
+        <button id="ai-send" onclick="sendAiMessage()">Gönder</button>
+    </div>
+</div>
+
+<script>
+    function toggleAiPanel() {
+        const p = document.getElementById('ai-panel');
+        p.style.display = p.style.display === 'flex' ? 'none' : 'flex';
+    }
+    function aiEnter(e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAiMessage(); }
+    }
+    async function sendAiMessage() {
+        const input = document.getElementById('ai-input');
+        const msg = input.value.trim();
+        if (!msg) return;
+        addMsg(msg, 'user');
+        input.value = '';
+        const btn = document.getElementById('ai-send');
+        btn.disabled = true;
+        addMsg('...', 'bot', 'loading-msg');
+        try {
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg })
+            });
+            const data = await res.json();
+            document.getElementById('loading-msg')?.remove();
+            addMsg(data.reply || 'Yanıt alınamadı.', 'bot');
+        } catch {
+            document.getElementById('loading-msg')?.remove();
+            addMsg('Bağlantı hatası.', 'bot');
+        }
+        btn.disabled = false;
+    }
+    function addMsg(text, role, id) {
+        const box = document.getElementById('ai-messages');
+        const d = document.createElement('div');
+        d.className = 'ai-msg ' + role;
+        d.textContent = text;
+        if (id) d.id = id;
+        box.appendChild(d);
+        box.scrollTop = box.scrollHeight;
+    }
+</script>
+
 </body>
 </html>

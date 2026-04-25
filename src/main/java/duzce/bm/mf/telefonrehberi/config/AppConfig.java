@@ -37,7 +37,7 @@ public class AppConfig {
     @Autowired
     Environment environment;
 
-    @Bean
+    @Bean(name = "entityManagerFactory")
     public LocalSessionFactoryBean getSessionFactory() {
         LocalSessionFactoryBean factoryBean = new LocalSessionFactoryBean();
         factoryBean.setDataSource(dataSource());
@@ -61,7 +61,7 @@ public class AppConfig {
         return factoryBean;
     }
 
-    @Bean
+    @Bean(name = "transactionManager")
     public HibernateTransactionManager getTransactionManager() {
         HibernateTransactionManager transactionManager = new HibernateTransactionManager();
         transactionManager.setSessionFactory(getSessionFactory().getObject());

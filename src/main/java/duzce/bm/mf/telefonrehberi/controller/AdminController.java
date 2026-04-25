@@ -68,13 +68,17 @@ public class AdminController {
                                @RequestParam(value = "extensionNumber", required = false) String extensionNumber,
                                @RequestParam(value = "roomNumber", required = false) String roomNumber,
                                @RequestParam(value = "email", required = false) String email,
-                               @RequestParam(value = "subDepartmentId", required = false) int subDepartmentId,
+                               @RequestParam(value = "subDepartmentId", required = false) Integer subDepartmentId,
                                HttpSession session,
                                RedirectAttributes ra) {
-        PersonDto personDto = new PersonDto(0, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subDepartmentId, null);
+
+        int subId = (subDepartmentId != null) ? subDepartmentId : 0;
+        PersonDto personDto = new PersonDto(0, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subId, null);
         adminPersonService.saveOrUpdatePerson(personDto);
-        String message = messageSource.getMessage("person.add.success", new Object[]{firstName, lastName}, LocaleContextHolder.getLocale());
+
+        String message = firstName + " " + lastName + " başarıyla eklendi!";
         ra.addFlashAttribute("mesaj", message);
+
         return "redirect:/admin/persons";
     }
 
@@ -86,26 +90,26 @@ public class AdminController {
                                @RequestParam(value = "extensionNumber", required = false) String extensionNumber,
                                @RequestParam(value = "roomNumber", required = false) String roomNumber,
                                @RequestParam(value = "email", required = false) String email,
-                               @RequestParam(value = "subDepartmentId", required = false) int subDepartmentId,
+                               @RequestParam(value = "subDepartmentId", required = false) Integer subDepartmentId,
                                HttpSession session,
                                RedirectAttributes ra) {
 
-        PersonDto personDto = new PersonDto(personId, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subDepartmentId, null);
+        int subId = (subDepartmentId != null) ? subDepartmentId : 0;
+        PersonDto personDto = new PersonDto(personId, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subId, null);
         adminPersonService.saveOrUpdatePerson(personDto);
-        String message = messageSource.getMessage("person.update.success", new Object[]{firstName, lastName}, LocaleContextHolder.getLocale());
+
+        String message = firstName + " " + lastName + " başarıyla güncellendi!";
         ra.addFlashAttribute("mesaj", message);
+
         return "redirect:/admin/persons";
     }
-
     @PostMapping("/delete")
     public String deletePerson(@RequestParam("personId") int personId, HttpSession session, RedirectAttributes ra) {
         boolean isDeleted = adminPersonService.deletePerson(personId);
         if (isDeleted) {
-            String message = messageSource.getMessage("person.delete.success", new Object[]{personId}, LocaleContextHolder.getLocale());
-            ra.addFlashAttribute("mesaj", message);
+            ra.addFlashAttribute("mesaj", "Kişi başarıyla silindi!");
         } else {
-            String message = messageSource.getMessage("person.notfound", null, LocaleContextHolder.getLocale());
-            ra.addFlashAttribute("hata", message);
+            ra.addFlashAttribute("hata", "Kişi bulunamadı veya silinemedi!");
         }
         return "redirect:/admin/persons";
     }
