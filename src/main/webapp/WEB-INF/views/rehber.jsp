@@ -1,15 +1,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telefon Rehberi</title>
+    <title><spring:message code="app.name" /></title>
     <style>
-        /* CSS KODLARININ TAMAMINI BURAYA YAPIŞTIR (Yukarıdaki HTML'de olan CSS'in aynısı) */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f5f6f8; color: #1a1a2e; min-height: 100vh; display: flex; flex-direction: column; }
         header { background: #1a3a6b; color: #fff; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
@@ -17,6 +17,7 @@
         .header-brand .logo-circle { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; letter-spacing: -0.5px; }
         .header-brand h1 { font-size: 17px; font-weight: 600; line-height: 1.2; }
         .header-brand span { font-size: 12px; opacity: 0.72; font-weight: 400; }
+        .header-actions { display: flex; align-items: center; gap: 15px; }
         .header-actions a { font-size: 13px; color: rgba(255,255,255,0.85); text-decoration: none; border: 1px solid rgba(255,255,255,0.35); padding: 6px 16px; border-radius: 6px; transition: background 0.15s; }
         .header-actions a:hover { background: rgba(255,255,255,0.12); }
         .filter-bar { background: #fff; border-bottom: 1px solid #e2e4ea; padding: 1rem 2rem; display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
@@ -48,14 +49,13 @@
         .email-link:hover { text-decoration: underline; }
         .empty-state { padding: 3rem; text-align: center; color: #9ca3af; }
         .no-result-msg { padding: 2rem; text-align: center; color: #6b7280; font-weight: 500; }
-        footer { background: #1a3a6b; color: rgba(255,255,255,0.65); text-align: center; padding: 14px 2rem; font-size: 12px; }
+        footer { background: #1a3a6b; color: rgba(255,255,255,0.65); text-align: center; padding: 14px 2rem; font-size: 12px; margin-top: auto; }
         footer span { color: rgba(255,255,255,0.9); font-weight: 500; }
         @media (max-width: 768px) {
             header { padding: 0 1rem; }
             .filter-bar { padding: 1rem; gap: 1rem; }
             main { padding: 1rem; }
             .filter-group { min-width: 100%; }
-            thead th:nth-child(4), thead th:nth-child(5), tbody td:nth-child(4), tbody td:nth-child(5) { display: none; }
         }
     </style>
 </head>
@@ -65,20 +65,22 @@
     <a href="/" class="header-brand">
         <div class="logo-circle">TR</div>
         <div>
-            <h1>Telefon Rehberi</h1>
-            <span>Kurum İçi İletişim Sistemi</span>
+            <h1><spring:message code="app.name" /></h1>
+            <span><spring:message code="app.subtitle" /></span>
         </div>
     </a>
     <div class="header-actions">
-        <a href="/login">Oturum Aç</a>
+        <a href="?lang=tr" style="text-decoration:none; color:white;">TR</a> |
+        <a href="?lang=en" style="text-decoration:none; color:white;">EN</a>
+        <a href="/login"><spring:message code="login.link" /></a>
     </div>
 </header>
 
 <div class="filter-bar">
     <div class="filter-group">
-        <label>Birim Seç</label>
+        <label><spring:message code="filter.department" /></label>
         <select id="departmentSelect" onchange="filterByDepartment(this)">
-            <option value="">— Tüm Birimler —</option>
+            <option value=""><spring:message code="filter.allDepartments" /></option>
             <c:forEach var="dept" items="${departments}">
                 <option value="${dept.departmentId}" ${selectedDepartmentId == dept.departmentId ? 'selected' : ''}>
                         ${dept.name}
@@ -88,9 +90,9 @@
     </div>
 
     <div class="filter-group">
-        <label>Bölüm Seç</label>
+        <label><spring:message code="filter.subdepartment" /></label>
         <select id="subDepartmentSelect" onchange="filterBySubDepartment(this)">
-            <option value="">— Tüm Bölümler —</option>
+            <option value=""><spring:message code="filter.allSubDepartments" /></option>
             <c:forEach var="sub" items="${subDepartments}">
                 <option value="${sub.subDepartmentId}" ${selectedSubId == sub.subDepartmentId ? 'selected' : ''}>
                         ${sub.name}
@@ -103,13 +105,13 @@
         <div class="dept-info" id="deptInfo">
             <c:if test="${not empty selectedDepartment.phones}">
                 <div class="dept-info-item">
-                    <span class="lbl">Telefon:</span>
+                    <span class="lbl"><spring:message code="department.phone" />:</span>
                     <span>${selectedDepartment.phones}</span>
                 </div>
             </c:if>
             <c:if test="${not empty selectedDepartment.faxes}">
                 <div class="dept-info-item">
-                    <span class="lbl">Faks:</span>
+                    <span class="lbl"><spring:message code="department.fax" />:</span>
                     <span>${selectedDepartment.faxes}</span>
                 </div>
             </c:if>
@@ -117,13 +119,10 @@
     </c:if>
 
     <div class="filter-group search-group">
-        <label>Kişi / Birim Ara</label>
+        <label><spring:message code="filter.search" /></label>
         <div style="position:relative;">
-            <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:#9ca3af;pointer-events:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-            <input type="text" id="searchInput" placeholder="Ad, Soyad, Birim veya Bölüm (3 harf)..." oninput="liveSearch(this.value)"
-                   style="width:100%;padding-left:36px;">
+            <input type="text" id="searchInput" placeholder="<spring:message code="filter.search.placeholder" />" oninput="liveSearch(this.value)"
+                   style="width:100%;padding-left:10px;">
         </div>
     </div>
 </div>
@@ -131,30 +130,29 @@
 <main>
     <div class="table-card">
         <div class="table-header">
-            <h2>Personel Listesi</h2>
+            <h2><spring:message code="table.title" /></h2>
             <span class="result-count" id="resultCount">
-                <span>${fn:length(kisiler)}</span> kişi
+                <span>${fn:length(kisiler)}</span> <spring:message code="table.person.count" />
             </span>
         </div>
 
         <table>
             <thead>
             <tr>
-                <th>Ad Soyad / Unvan</th>
-                <th>Birim</th>
-                <th>Bölüm</th>
-                <th>Oda</th>
-                <th>Dahili No</th>
-                <th>E-posta</th>
+                <th><spring:message code="table.name" /></th>
+                <th><spring:message code="table.department" /></th>
+                <th><spring:message code="table.subdepartment" /></th>
+                <th><spring:message code="table.room" /></th>
+                <th><spring:message code="table.extension" /></th>
+                <th><spring:message code="table.email" /></th>
             </tr>
             </thead>
             <tbody id="personTable">
-
             <c:choose>
                 <c:when test="${empty kisiler}">
                     <tr>
                         <td colspan="6" class="empty-state">
-                            <p>Henüz kayıt bulunamadı veya filtreleme yapın.</p>
+                            <p><spring:message code="table.empty" /></p>
                         </td>
                     </tr>
                 </c:when>
@@ -165,53 +163,17 @@
                                 <div class="person-name">${kisi.firstName} ${kisi.lastName}</div>
                                 <div class="person-title">${kisi.titleName}</div>
                             </td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${not empty kisi.deptName}">
-                                        ${kisi.deptName}
-                                    </c:when>
-                                    <c:otherwise>—</c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${not empty kisi.subDeptName}">
-                                        ${kisi.subDeptName}
-                                    </c:when>
-                                    <c:otherwise>—</c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${not empty kisi.roomNumber}">
-                                        <span class="badge-room">${kisi.roomNumber}</span>
-                                    </c:when>
-                                    <c:otherwise>—</c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${not empty kisi.extensionNumber}">
-                                        <span class="badge-ext">${kisi.extensionNumber}</span>
-                                    </c:when>
-                                    <c:otherwise>—</c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${not empty kisi.email}">
-                                        <a class="email-link" href="mailto:${kisi.email}">${kisi.email}</a>
-                                    </c:when>
-                                    <c:otherwise>—</c:otherwise>
-                                </c:choose>
-                            </td>
+                            <td>${not empty kisi.deptName ? kisi.deptName : '—'}</td>
+                            <td>${not empty kisi.subDeptName ? kisi.subDeptName : '—'}</td>
+                            <td>${not empty kisi.roomNumber ? kisi.roomNumber : '—'}</td>
+                            <td>${not empty kisi.extensionNumber ? kisi.extensionNumber : '—'}</td>
+                            <td>${not empty kisi.email ? kisi.email : '—'}</td>
                         </tr>
                     </c:forEach>
                 </c:otherwise>
             </c:choose>
-
             <tr id="noResultRow" style="display: none;">
-                <td colspan="6" class="no-result-msg">Aranan kriterlere uygun personel bulunamadı.</td>
+                <td colspan="6" class="no-result-msg"><spring:message code="table.empty" /></td>
             </tr>
             </tbody>
         </table>
@@ -219,41 +181,34 @@
 </main>
 
 <footer>
-    <span>2026</span> — BM470 - Ders Projesi
+    <span>2026</span> — <spring:message code="footer.project" />
 </footer>
 
 <script>
-    // JS KODLARININ TAMAMINI BURAYA YAPIŞTIR (Yukarıdaki HTML'de olan JS'in aynısı)
     function liveSearch(val) {
         const q = val.toLowerCase().trim();
         const rows = document.querySelectorAll('#personTable .person-row');
         const noResultRow = document.getElementById('noResultRow');
         let visibleCount = 0;
-
         if (q.length > 0 && q.length < 3) {
             rows.forEach(row => row.style.display = '');
             noResultRow.style.display = 'none';
             document.getElementById('resultCount').querySelector('span').textContent = rows.length;
             return;
         }
-
         rows.forEach(row => {
             const content = row.innerText.toLowerCase();
             const isMatch = !q || content.includes(q);
-
             row.style.display = isMatch ? '' : 'none';
             if (isMatch) visibleCount++;
         });
-
         noResultRow.style.display = (visibleCount === 0 && q.length >= 3) ? '' : 'none';
         document.getElementById('resultCount').querySelector('span').textContent = visibleCount;
     }
-
     function filterByDepartment(sel) {
         const id = sel.value;
         window.location.href = id ? '/?departmentId=' + id : '/';
     }
-
     function filterBySubDepartment(sel) {
         const id = sel.value;
         const deptId = document.getElementById('departmentSelect').value;
@@ -266,31 +221,19 @@
     }
 </script>
 
-
-<!-- Yapay zeka kodu -->
 <style>
-    #ai-fab { position:fixed; bottom:24px; right:24px; width:52px; height:52px;
-        border-radius:50%; background:#1a3a6b; color:#fff; border:none; font-size:22px;
-        cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.25); z-index:1000;
-        display:flex; align-items:center; justify-content:center; }
-    #ai-panel { position:fixed; bottom:88px; right:24px; width:340px; max-height:480px;
-        background:#fff; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.18);
-        display:none; flex-direction:column; z-index:1000; overflow:hidden;
-        border:1px solid #e2e4ea; }
-    #ai-panel-header { background:#1a3a6b; color:#fff; padding:12px 16px;
-        font-weight:600; font-size:14px; display:flex; justify-content:space-between; align-items:center; }
+    #ai-fab { position:fixed; bottom:24px; right:24px; width:52px; height:52px; border-radius:50%; background:#1a3a6b; color:#fff; border:none; font-size:22px; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.25); z-index:1000; display:flex; align-items:center; justify-content:center; }
+    #ai-panel { position:fixed; bottom:88px; right:24px; width:340px; max-height:480px; background:#fff; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.18); display:none; flex-direction:column; z-index:1000; overflow:hidden; border:1px solid #e2e4ea; }
+    #ai-panel-header { background:#1a3a6b; color:#fff; padding:12px 16px; font-weight:600; font-size:14px; display:flex; justify-content:space-between; align-items:center; }
     #ai-panel-header button { background:none; border:none; color:#fff; font-size:18px; cursor:pointer; line-height:1; }
-    #ai-messages { flex:1; overflow-y:auto; padding:12px; display:flex;
-        flex-direction:column; gap:8px; min-height:200px; max-height:330px; }
+    #ai-messages { flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px; min-height:200px; max-height:330px; }
     .ai-msg { max-width:85%; padding:8px 12px; border-radius:8px; font-size:13px; line-height:1.5; white-space:pre-wrap; }
     .ai-msg.user { background:#eff6ff; color:#1a3a6b; align-self:flex-end; border-bottom-right-radius:2px; }
     .ai-msg.bot  { background:#f3f4f6; color:#374151; align-self:flex-start; border-bottom-left-radius:2px; }
     #ai-input-row { display:flex; gap:8px; padding:10px 12px; border-top:1px solid #e2e4ea; }
-    #ai-input { flex:1; border:1px solid #d1d5db; border-radius:7px; padding:7px 10px;
-        font-size:13px; font-family:inherit; outline:none; resize:none; }
+    #ai-input { flex:1; border:1px solid #d1d5db; border-radius:7px; padding:7px 10px; font-size:13px; font-family:inherit; outline:none; resize:none; }
     #ai-input:focus { border-color:#1a3a6b; }
-    #ai-send { background:#1a3a6b; color:#fff; border:none; border-radius:7px;
-        padding:7px 14px; font-size:13px; cursor:pointer; white-space:nowrap; }
+    #ai-send { background:#1a3a6b; color:#fff; border:none; border-radius:7px; padding:7px 14px; font-size:13px; cursor:pointer; white-space:nowrap; }
     #ai-send:disabled { opacity:0.5; cursor:not-allowed; }
 </style>
 
@@ -311,13 +254,8 @@
 </div>
 
 <script>
-    function toggleAiPanel() {
-        const p = document.getElementById('ai-panel');
-        p.style.display = p.style.display === 'flex' ? 'none' : 'flex';
-    }
-    function aiEnter(e) {
-        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAiMessage(); }
-    }
+    function toggleAiPanel() { const p = document.getElementById('ai-panel'); p.style.display = p.style.display === 'flex' ? 'none' : 'flex'; }
+    function aiEnter(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAiMessage(); } }
     async function sendAiMessage() {
         const input = document.getElementById('ai-input');
         const msg = input.value.trim();
@@ -328,11 +266,7 @@
         btn.disabled = true;
         addMsg('...', 'bot', 'loading-msg');
         try {
-            const res = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: msg })
-            });
+            const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: msg }) });
             const data = await res.json();
             document.getElementById('loading-msg')?.remove();
             addMsg(data.reply || 'Yanıt alınamadı.', 'bot');
