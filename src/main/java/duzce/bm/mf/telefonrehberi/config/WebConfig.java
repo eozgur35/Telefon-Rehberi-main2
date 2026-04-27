@@ -1,6 +1,7 @@
 package duzce.bm.mf.telefonrehberi.config;
 
 import duzce.bm.mf.telefonrehberi.interceptors.AdminAuthInterceptor;
+import duzce.bm.mf.telefonrehberi.interceptors.LoggingInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -64,8 +65,15 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+
         registry.addInterceptor(localeInterceptor()).addPathPatterns("/*");
-        registry.addInterceptor(adminAuthInterceptor).addPathPatterns("/admin/**").excludePathPatterns("/login", "/resources/**", "/error","/"); ;
+
+        registry.addInterceptor(adminAuthInterceptor)
+                .addPathPatterns("/admin/**")
+                .excludePathPatterns("/login", "/resources/**", "/error","/");
+
+        registry.addInterceptor(new LoggingInterceptor())
+                .addPathPatterns("/**");
     }
 
 }

@@ -3,12 +3,11 @@ package duzce.bm.mf.telefonrehberi.controller;
 import duzce.bm.mf.telefonrehberi.dto.DepartmentDto;
 import duzce.bm.mf.telefonrehberi.dto.PersonDto;
 import duzce.bm.mf.telefonrehberi.dto.SubDepartmentDto;
-import duzce.bm.mf.telefonrehberi.exception.BadRequestException;
-import duzce.bm.mf.telefonrehberi.exception.DatabaseException;
-import duzce.bm.mf.telefonrehberi.exception.ResourceNotFoundException;
 import duzce.bm.mf.telefonrehberi.services.AdminService;
 import duzce.bm.mf.telefonrehberi.services.DepartmentService;
 import duzce.bm.mf.telefonrehberi.services.SubDepartmentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -23,6 +22,8 @@ import java.util.Objects;
 @Controller
 public class HomePageController {
 
+    private static final Logger logger = LoggerFactory.getLogger(HomePageController.class);
+
     @Autowired
     AdminService adminPersonService;
 
@@ -35,11 +36,12 @@ public class HomePageController {
     @Autowired
     MessageSource messageSource;
 
-
     @GetMapping("/")
     public String homePage(Model model,
                            @RequestParam(name = "departmentId", required = false) Integer departmentId,
                            @RequestParam(name = "subDepartmentId", required = false) Integer subDepartmentId) {
+
+        logger.info("HomePage çağrıldı | departmentId={} | subDepartmentId={}", departmentId, subDepartmentId);
 
         model.addAttribute("departments", departmentService.getAllDepartments());
 
@@ -48,19 +50,31 @@ public class HomePageController {
         List<PersonDto> personDtoList;
 
         if (Objects.nonNull(departmentId)) {
+            logger.debug("Department filtreleme aktif: {}", departmentId);
+
             selectedDept = departmentService.findById(departmentId);
+
             if (Objects.nonNull(selectedDept)) {
                 subDepts = subDepartmentService.getSubDepartmentsByDepartmentId(departmentId);
+                logger.debug("Alt departman sayısı: {}", subDepts.size());
+            } else {
+                logger.warn("Department bulunamadı: {}", departmentId);
             }
         }
 
         if (Objects.nonNull(subDepartmentId)) {
+            logger.debug("SubDepartment filtreleme aktif: {}", subDepartmentId);
             personDtoList = adminPersonService.getPersonsBySubDepartmentId(subDepartmentId);
         } else if (Objects.nonNull(departmentId)) {
+            logger.debug("Department bazlı kişi listesi çekiliyor");
             personDtoList = adminPersonService.getPersonsByDepartmentId(departmentId);
         } else {
+            logger.debug("Tüm kişiler getiriliyor");
             personDtoList = adminPersonService.getAllPerson();
         }
+
+        logger.info("Gösterilecek kişi sayısı: {}", personDtoList.size());
+
         model.addAttribute("subDepartments", subDepts);
         model.addAttribute("selectedDepartment", selectedDept);
         model.addAttribute("selectedDepartmentId", departmentId);
