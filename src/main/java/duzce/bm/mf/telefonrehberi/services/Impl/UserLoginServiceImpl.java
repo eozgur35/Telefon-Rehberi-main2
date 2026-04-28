@@ -18,8 +18,7 @@ import java.util.Objects;
 @Transactional
 public class UserLoginServiceImpl implements UserLoginService {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(UserLoginServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserLoginServiceImpl.class);
 
     @Autowired
     UserDao userDao;

@@ -33,9 +33,6 @@ public class HomePageController {
     @Autowired
     SubDepartmentService subDepartmentService;
 
-    @Autowired
-    MessageSource messageSource;
-
     @GetMapping("/")
     public String homePage(Model model,
                            @RequestParam(name = "departmentId", required = false) Integer departmentId,

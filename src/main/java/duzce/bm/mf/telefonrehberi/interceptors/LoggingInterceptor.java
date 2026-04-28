@@ -7,16 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Enumeration;
+import java.util.Objects;
 
 public class LoggingInterceptor implements HandlerInterceptor {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(LoggingInterceptor.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoggingInterceptor.class);
 
     @Override
-    public boolean preHandle(HttpServletRequest request,
-                             HttpServletResponse response,
-                             Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
         String uri = request.getRequestURI();
         String method = request.getMethod();
@@ -32,24 +30,16 @@ public class LoggingInterceptor implements HandlerInterceptor {
                     .append(" ");
         }
 
-        logger.info("[REQUEST] {} {} | PARAMS: {}",
-                method, uri,
-                params.length() > 0 ? params.toString() : "NONE");
+        logger.info("[REQUEST] {} {} | PARAMS: {}", method, uri, params.length() > 0 ? params.toString() : "NONE");
 
         return true;
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request,
-                                HttpServletResponse response,
-                                Object handler,
-                                Exception ex) {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        logger.info("[RESPONSE] {} | STATUS: {}", request.getRequestURI(), response.getStatus());
 
-        logger.info("[RESPONSE] {} | STATUS: {}",
-                request.getRequestURI(),
-                response.getStatus());
-
-        if (ex != null) {
+        if (Objects.nonNull(ex)) {
             logger.error("[ERROR] Request sırasında hata oluştu -> {}", request.getRequestURI(), ex);
         }
     }

@@ -32,22 +32,22 @@ public class ChatController {
 
         String userMessage = body.get("message");
 
-        if (userMessage == null || userMessage.isBlank()) {
+        if (Objects.isNull(userMessage) || userMessage.isBlank()) {
             logger.warn("Boş mesaj geldi");
             return ResponseEntity.badRequest().body(Map.of("reply", "Mesaj boş olamaz."));
         }
 
         logger.debug("Kullanıcı mesajı: {}", userMessage);
 
-        List<PersonDto> kisiler = adminPersonService.getAllPerson();
-        logger.info("Veritabanından {} kişi çekildi", kisiler.size());
+        List<PersonDto> personList = adminPersonService.getAllPerson();
+        logger.info("Veritabanından {} kişi çekildi", personList.size());
 
-        String personelBilgisi = kisiler.stream()
-                .map(p -> String.format("- %s %s | Unvan: %s | Birim: %s | Bölüm: %s | Dahili: %s | Oda: %s | E-posta: %s",
-                        nvl(p.getFirstName()), nvl(p.getLastName()),
-                        nvl(p.getTitleName()), nvl(p.getDeptName()),
-                        nvl(p.getSubDeptName()), nvl(p.getExtensionNumber()),
-                        nvl(p.getRoomNumber()), nvl(p.getEmail())))
+        String personsDetail = personList.stream()
+                .map(person -> String.format("- %s %s | Unvan: %s | Birim: %s | Bölüm: %s | Dahili: %s | Oda: %s | E-posta: %s",
+                        nullToDash(person.getFirstName()), nullToDash(person.getLastName()),
+                        nullToDash(person.getTitleName()), nullToDash(person.getDeptName()),
+                        nullToDash(person.getSubDeptName()), nullToDash(person.getExtensionNumber()),
+                        nullToDash(person.getRoomNumber()), nullToDash(person.getEmail())))
                 .collect(Collectors.joining("\n"));
 
         logger.debug("System prompt hazırlandı");
@@ -58,7 +58,7 @@ public class ChatController {
             Kısa ve net yanıtlar ver. Listede olmayan bilgiyi uydurma.
             
             PERSONEL LİSTESİ:
-            """ + personelBilgisi;
+            """ + personsDetail;
 
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", "claude-haiku-4-5-20251001");
@@ -83,8 +83,7 @@ public class ChatController {
                     Map.class
             );
 
-            List<Map<String, Object>> content =
-                    (List<Map<String, Object>>) response.getBody().get("content");
+            List<Map<String, Object>> content = (List<Map<String, Object>>) response.getBody().get("content");
 
             String reply = (String) content.get(0).get("text");
 
@@ -94,12 +93,14 @@ public class ChatController {
 
         } catch (Exception e) {
             logger.error("Claude API hatası oluştu", e);
-            return ResponseEntity.status(500)
-                    .body(Map.of("reply", "Asistan şu an yanıt veremiyor."));
+            return ResponseEntity.status(500).body(Map.of("reply", "Asistan şu an yanıt veremiyor."));
         }
     }
 
-    private String nvl(Object val) {
-        return val != null ? val.toString() : "—";
+    private String nullToDash(Object value) {
+        if (Objects.isNull(value)) {
+            return "—";
+        }
+        return value.toString();
     }
 }

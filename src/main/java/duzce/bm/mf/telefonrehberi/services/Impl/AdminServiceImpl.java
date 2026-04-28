@@ -22,8 +22,7 @@ import java.util.Objects;
 @Service
 public class AdminServiceImpl implements AdminService {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(AdminServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdminServiceImpl.class);
 
     @Autowired
     SubDepartmentDao subDepartmentDao;
@@ -56,8 +55,7 @@ public class AdminServiceImpl implements AdminService {
 
     public void saveOrUpdatePerson(PersonDto personDto) {
 
-        logger.info("Person kaydet/güncelle işlemi başladı: {} {}",
-                personDto.getFirstName(), personDto.getLastName());
+        logger.info("Person kaydet/güncelle işlemi başladı: {} {}", personDto.getFirstName(), personDto.getLastName());
 
         Person person = new Person();
         BeanUtils.copyProperties(personDto, person);

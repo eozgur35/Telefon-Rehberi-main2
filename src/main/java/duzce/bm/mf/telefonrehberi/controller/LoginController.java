@@ -27,8 +27,7 @@ public class LoginController {
     MessageSource messageSource;
 
     @GetMapping("/login")
-    public String loginPage(HttpSession session, Model model,
-                            @RequestParam(name = "girisEmail", required = false) String email) {
+    public String loginPage(HttpSession session, Model model, @RequestParam(name = "girisEmail", required = false) String email) {
 
         logger.info("Login sayfası açıldı");
 
@@ -53,24 +52,21 @@ public class LoginController {
 
         if (Objects.isNull(userDto)) {
             logger.warn("Kullanıcı bulunamadı: {}", email);
-            model.addAttribute("hata",
-                    messageSource.getMessage("login.user.notfound", null, LocaleContextHolder.getLocale()));
+            model.addAttribute("hata", messageSource.getMessage("login.user.notfound", null, LocaleContextHolder.getLocale()));
             model.addAttribute("girisEmail", email);
             return "login";
         }
 
         if (!userDto.getPassword().equals(password)) {
             logger.warn("Hatalı şifre denemesi: {}", email);
-            model.addAttribute("hata",
-                    messageSource.getMessage("login.password.invalid", null, LocaleContextHolder.getLocale()));
+            model.addAttribute("hata", messageSource.getMessage("login.password.invalid", null, LocaleContextHolder.getLocale()));
             model.addAttribute("girisEmail", email);
             return "login";
         }
 
         if (userDto.getRole() != Role.ADMIN) {
             logger.warn("Admin olmayan kullanıcı giriş denemesi: {} | role={}", email, userDto.getRole());
-            model.addAttribute("hata",
-                    messageSource.getMessage("login.admin.only", null, LocaleContextHolder.getLocale()));
+            model.addAttribute("hata", messageSource.getMessage("login.admin.only", null, LocaleContextHolder.getLocale()));
             model.addAttribute("girisEmail", email);
             return "login";
         }
@@ -88,8 +84,7 @@ public class LoginController {
 
         Object user = session.getAttribute("oturumUser");
 
-        logger.info("Logout işlemi: {}",
-                (user != null ? ((UserDto) user).getEmail() : "bilinmiyor"));
+        logger.info("Logout işlemi: {}", (user != null ? ((UserDto) user).getEmail() : "bilinmiyor"));
 
         session.invalidate();
 

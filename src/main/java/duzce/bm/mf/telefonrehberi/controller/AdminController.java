@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/admin/persons")
 public class AdminController {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(AdminController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     @Autowired
     ObjectMapper objectMapper;
@@ -53,9 +53,9 @@ public class AdminController {
         model.addAttribute("subDepartments", subDepartDtoList);
 
         try {
-            model.addAttribute("subDepartmentsJson",
-                    objectMapper.writeValueAsString(subDepartDtoList));
-        } catch (JsonProcessingException e) {
+            model.addAttribute("subDepartmentsJson", objectMapper.writeValueAsString(subDepartDtoList));
+        }
+        catch (JsonProcessingException e) {
             logger.error("SubDepartment JSON dönüşüm hatası", e);
             model.addAttribute("subDepartmentsJson", "[]");
         }
@@ -76,24 +76,19 @@ public class AdminController {
                                @RequestParam(value = "roomNumber", required = false) String roomNumber,
                                @RequestParam(value = "email", required = false) String email,
                                @RequestParam(value = "subDepartmentId", required = false) Integer subDepartmentId,
-                               HttpSession session,
                                RedirectAttributes ra) {
 
         logger.info("Person create isteği: {} {}", firstName, lastName);
 
-        int subId = (subDepartmentId != null) ? subDepartmentId : 0;
+        int subId = (Objects.nonNull(subDepartmentId)) ? subDepartmentId : 0;
 
-        PersonDto personDto = new PersonDto(
-                0, firstName, lastName, titleName,
-                extensionNumber, roomNumber, email, null, subId, null
-        );
+        PersonDto personDto = new PersonDto(0, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subId, null);
 
         adminPersonService.saveOrUpdatePerson(personDto);
 
         logger.info("Person başarıyla eklendi: {} {}", firstName, lastName);
 
-        ra.addFlashAttribute("mesaj",
-                firstName + " " + lastName + " başarıyla eklendi!");
+        ra.addFlashAttribute("mesaj", firstName + " " + lastName + " başarıyla eklendi!");
 
         return "redirect:/admin/persons";
     }
@@ -107,32 +102,25 @@ public class AdminController {
                                @RequestParam(value = "roomNumber", required = false) String roomNumber,
                                @RequestParam(value = "email", required = false) String email,
                                @RequestParam(value = "subDepartmentId", required = false) Integer subDepartmentId,
-                               HttpSession session,
                                RedirectAttributes ra) {
 
         logger.info("Person update isteği: id={}", personId);
 
-        int subId = (subDepartmentId != null) ? subDepartmentId : 0;
+        int subId = (Objects.nonNull(subDepartmentId)) ? subDepartmentId : 0;
 
-        PersonDto personDto = new PersonDto(
-                personId, firstName, lastName, titleName,
-                extensionNumber, roomNumber, email, null, subId, null
-        );
+        PersonDto personDto = new PersonDto(personId, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subId, null);
 
         adminPersonService.saveOrUpdatePerson(personDto);
 
         logger.info("Person güncellendi: id={}", personId);
 
-        ra.addFlashAttribute("mesaj",
-                firstName + " " + lastName + " başarıyla güncellendi!");
+        ra.addFlashAttribute("mesaj", firstName + " " + lastName + " başarıyla güncellendi!");
 
         return "redirect:/admin/persons";
     }
 
     @PostMapping("/delete")
-    public String deletePerson(@RequestParam("personId") int personId,
-                               HttpSession session,
-                               RedirectAttributes ra) {
+    public String deletePerson(@RequestParam("personId") int personId, RedirectAttributes ra) {
 
         logger.warn("Person silme isteği: id={}", personId);
 

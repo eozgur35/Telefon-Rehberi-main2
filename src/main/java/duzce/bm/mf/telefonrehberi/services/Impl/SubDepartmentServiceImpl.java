@@ -22,8 +22,7 @@ import java.util.Objects;
 @Transactional
 public class SubDepartmentServiceImpl implements SubDepartmentService {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(SubDepartmentServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SubDepartmentServiceImpl.class);
 
     @Autowired
     DepartmentDao departmentDao;
@@ -42,9 +41,7 @@ public class SubDepartmentServiceImpl implements SubDepartmentService {
             SubDepartmentDto subDepartmentDto = new SubDepartmentDto();
             BeanUtils.copyProperties(subDepartment, subDepartmentDto);
 
-            subDepartmentDto.setDepartmentId(
-                    subDepartment.getDepartment().getDepartmentId()
-            );
+            subDepartmentDto.setDepartmentId(subDepartment.getDepartment().getDepartmentId());
 
             subDepartmentDtoList.add(subDepartmentDto);
         }
@@ -65,8 +62,7 @@ public class SubDepartmentServiceImpl implements SubDepartmentService {
             throw new ResourceNotFoundException("Department bulunamadı (id: " + id + ")");
         }
 
-        List<SubDepartment> subDepartmentList =
-                subDepartmentDao.findByDepartment(department);
+        List<SubDepartment> subDepartmentList = subDepartmentDao.findByDepartment(department);
 
         if (subDepartmentList.isEmpty()) {
             logger.warn("Bu department'a ait subDepartment yok: id={}", id);
@@ -79,9 +75,7 @@ public class SubDepartmentServiceImpl implements SubDepartmentService {
             SubDepartmentDto subDepartmentDto = new SubDepartmentDto();
             BeanUtils.copyProperties(subDepartment, subDepartmentDto);
 
-            subDepartmentDto.setDepartmentId(
-                    subDepartment.getDepartment().getDepartmentId()
-            );
+            subDepartmentDto.setDepartmentId(subDepartment.getDepartment().getDepartmentId());
 
             subDepartmentDtoList.add(subDepartmentDto);
         }

@@ -15,16 +15,13 @@ import java.util.Objects;
 @Component
 public class AdminAuthInterceptor implements HandlerInterceptor {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(AdminAuthInterceptor.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdminAuthInterceptor.class);
 
     @Autowired
     private SessionUtil sessionUtil;
 
     @Override
-    public boolean preHandle(HttpServletRequest request,
-                             HttpServletResponse response,
-                             Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         String uri = request.getRequestURI();
         String method = request.getMethod();
@@ -39,15 +36,12 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         }
 
         if (!sessionUtil.isAdmin(session)) {
-            logger.warn("Admin yetkisi yok -> ERİŞİM ENGELLENDİ | user={}, uri={}",
-                    session.getAttribute("oturumEmail"), uri);
-
+            logger.warn("Admin yetkisi yok -> ERİŞİM ENGELLENDİ | user={}, uri={}", session.getAttribute("oturumEmail"), uri);
             response.sendRedirect(request.getContextPath() + "/login");
             return false;
         }
 
-        logger.info("Admin erişimi onaylandı -> user={}, uri={}",
-                session.getAttribute("oturumEmail"), uri);
+        logger.info("Admin erişimi onaylandı -> user={}, uri={}", session.getAttribute("oturumEmail"), uri);
 
         return true;
     }

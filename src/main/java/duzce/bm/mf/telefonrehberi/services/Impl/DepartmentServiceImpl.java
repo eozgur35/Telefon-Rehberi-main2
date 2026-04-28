@@ -20,8 +20,7 @@ import java.util.Objects;
 @Transactional
 public class DepartmentServiceImpl implements DepartmentService {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(DepartmentServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(DepartmentServiceImpl.class);
 
     @Autowired
     DepartmentDao departmentDao;
