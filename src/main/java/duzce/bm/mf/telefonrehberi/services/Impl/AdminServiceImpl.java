@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Base64; // Base64 çevirimi için eklendi
 import java.util.List;
 import java.util.Objects;
 
@@ -45,6 +46,13 @@ public class AdminServiceImpl implements AdminService {
             newPersonDto.setSubDeptId(person.getSubdepartment().getSubDepartmentId());
             newPersonDto.setSubDeptName(person.getSubdepartment().getName());
 
+            //Resim cevirme islemi
+            if (person.getPhoto() != null) {
+                String base64Photo = Base64.getEncoder().encodeToString(person.getPhoto());
+                newPersonDto.setPhoto(base64Photo);
+            }
+
+
             personDto.add(newPersonDto);
         }
 
@@ -55,22 +63,41 @@ public class AdminServiceImpl implements AdminService {
 
     public void saveOrUpdatePerson(PersonDto personDto) {
 
-        logger.info("Person kaydet/güncelle işlemi başladı: {} {}", personDto.getFirstName(), personDto.getLastName());
+        Person person;
 
-        Person person = new Person();
-        BeanUtils.copyProperties(personDto, person);
+        if (personDto.getPersonId() > 0) {
+            person = personDao.findById(personDto.getPersonId());
+            if (person == null) {
+                throw new ResourceNotFoundException("Güncellenecek person bulunamadı");
+            }
+        } else {
+            person = new Person();
+        }
+
+
+        person.setFirstName(personDto.getFirstName());
+        person.setLastName(personDto.getLastName());
+        person.setTitleName(personDto.getTitleName());
+        person.setExtensionNumber(personDto.getExtensionNumber());
+        person.setRoomNumber(personDto.getRoomNumber());
+        person.setEmail(personDto.getEmail());
+
+        if (personDto.getPhoto() != null && !personDto.getPhoto().isEmpty()) {
+            try {
+                byte[] decodedBytes = Base64.getDecoder().decode(personDto.getPhoto());
+                person.setPhoto(decodedBytes);
+            } catch (IllegalArgumentException e) {
+                logger.warn("Resim decode edilemedi: {}", e.getMessage());
+            }
+        }
 
         SubDepartment subDepartment = subDepartmentDao.findById(personDto.getSubDeptId());
-
         if (Objects.isNull(subDepartment)) {
-            logger.error("SubDepartment bulunamadı: id={}", personDto.getSubDeptId());
             throw new RuntimeException("Subdepartment bulunamadı.");
         }
 
         person.setSubdepartment(subDepartment);
         personDao.saveOrUpdate(person);
-
-        logger.info("Person başarıyla kaydedildi");
     }
 
     public boolean deletePerson(int id) {
@@ -104,6 +131,13 @@ public class AdminServiceImpl implements AdminService {
             personDto.setSubDeptId(person.getSubdepartment().getSubDepartmentId());
             personDto.setSubDeptName(person.getSubdepartment().getName());
 
+            // --- RESIM CEVIRME ISLEMI BASTI ---
+            if (person.getPhoto() != null) {
+                String base64Photo = Base64.getEncoder().encodeToString(person.getPhoto());
+                personDto.setPhoto(base64Photo);
+            }
+            // --- RESIM CEVIRME ISLEMI BITTI ---
+
             dtoPerson.add(personDto);
         }
 
@@ -126,6 +160,13 @@ public class AdminServiceImpl implements AdminService {
             personDto.setDeptName(person.getSubdepartment().getDepartment().getName());
             personDto.setSubDeptId(person.getSubdepartment().getSubDepartmentId());
             personDto.setSubDeptName(person.getSubdepartment().getName());
+
+            // --- RESIM CEVIRME ISLEMI BASTI ---
+            if (person.getPhoto() != null) {
+                String base64Photo = Base64.getEncoder().encodeToString(person.getPhoto());
+                personDto.setPhoto(base64Photo);
+            }
+            // --- RESIM CEVIRME ISLEMI BITTI ---
 
             personDtoList.add(personDto);
         }

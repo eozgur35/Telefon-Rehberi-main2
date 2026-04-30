@@ -15,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile; // Dosya yüklemek için eklendi
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Base64; // Base64 dönüşümü için eklendi
 import java.util.List;
 import java.util.Objects;
 
@@ -76,13 +78,24 @@ public class AdminController {
                                @RequestParam(value = "roomNumber", required = false) String roomNumber,
                                @RequestParam(value = "email", required = false) String email,
                                @RequestParam(value = "subDepartmentId", required = false) Integer subDepartmentId,
+                               @RequestParam(value = "file", required = false) MultipartFile file, // Yeni Eklendi
                                RedirectAttributes ra) {
 
         logger.info("Person create isteği: {} {}", firstName, lastName);
 
         int subId = (Objects.nonNull(subDepartmentId)) ? subDepartmentId : 0;
 
-        PersonDto personDto = new PersonDto(0, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subId, null);
+        //Resmi base64e cevirme
+        String base64Photo = null;
+        if (file != null && !file.isEmpty()) {
+            try {
+                base64Photo = Base64.getEncoder().encodeToString(file.getBytes());
+            } catch (Exception e) {
+                logger.error("Resim işlenirken hata oluştu", e);
+            }
+        }
+
+        PersonDto personDto = new PersonDto(0, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subId, null, base64Photo);
 
         adminPersonService.saveOrUpdatePerson(personDto);
 
@@ -102,13 +115,23 @@ public class AdminController {
                                @RequestParam(value = "roomNumber", required = false) String roomNumber,
                                @RequestParam(value = "email", required = false) String email,
                                @RequestParam(value = "subDepartmentId", required = false) Integer subDepartmentId,
+                               @RequestParam(value = "file", required = false) MultipartFile file, // Yeni Eklendi
                                RedirectAttributes ra) {
 
         logger.info("Person update isteği: id={}", personId);
 
         int subId = (Objects.nonNull(subDepartmentId)) ? subDepartmentId : 0;
 
-        PersonDto personDto = new PersonDto(personId, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subId, null);
+        String base64Photo = null;
+        if (file != null && !file.isEmpty()) {
+            try {
+                base64Photo = Base64.getEncoder().encodeToString(file.getBytes());
+            } catch (Exception e) {
+                logger.error("Resim işlenirken hata oluştu", e);
+            }
+        }
+
+        PersonDto personDto = new PersonDto(personId, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subId, null, base64Photo);
 
         adminPersonService.saveOrUpdatePerson(personDto);
 

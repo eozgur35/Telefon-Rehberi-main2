@@ -4,5 +4,4 @@ import duzce.bm.mf.telefonrehberi.entity.User;
 
 public interface UserDao {
     User findByEmail(String email);
-    void save(User user);
 }

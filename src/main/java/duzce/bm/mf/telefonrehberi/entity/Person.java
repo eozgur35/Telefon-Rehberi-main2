@@ -26,13 +26,19 @@ public class Person implements Serializable {
     @JoinColumn(name = "subdepartment_id")
     private SubDepartment subdepartment;
 
-    public Person(String email, String firstName, String lastName, String roomNumber, String extensionNumber, String titleName) {
-        this.email = email;
+    @Lob
+    @Column(name = "photo", columnDefinition="LONGBLOB")
+    private byte[] photo;
+
+    public Person(String firstName, String lastName, String extensionNumber, String titleName, String roomNumber, String email, SubDepartment subdepartment, byte[] photo) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.roomNumber = roomNumber;
         this.extensionNumber = extensionNumber;
         this.titleName = titleName;
+        this.roomNumber = roomNumber;
+        this.email = email;
+        this.subdepartment = subdepartment;
+        this.photo = photo;
     }
 
     public Person() {
@@ -101,4 +107,14 @@ public class Person implements Serializable {
     public void setTitleName(String titleName) {
         this.titleName = titleName;
     }
+
+    public byte[] getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
+    }
+
+    //aaaaaaa
 }

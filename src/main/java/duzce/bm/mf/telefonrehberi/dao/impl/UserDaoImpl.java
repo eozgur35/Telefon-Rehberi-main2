@@ -30,14 +30,4 @@ public class UserDaoImpl implements UserDao {
         Query<User> query = session.createQuery(criteriaQuery);
         return query.getSingleResult();
     }
-
-    @Override
-    public void save(User user) {
-        try {
-            sessionFactory.getCurrentSession().save(user);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }

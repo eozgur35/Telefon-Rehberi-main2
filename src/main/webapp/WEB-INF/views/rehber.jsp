@@ -41,6 +41,13 @@
         tbody tr:last-child { border-bottom: none; }
         tbody tr:hover { background: #f5f8ff; }
         tbody td { padding: 12px 16px; color: #374151; vertical-align: middle; }
+
+        /* -- YENI EKLENEN RESIM CSS'LERI BASTI -- */
+        .person-info-wrapper { display: flex; align-items: center; gap: 12px; }
+        .profile-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1px solid #e2e4ea; }
+        .default-avatar { width: 42px; height: 42px; border-radius: 50%; background: #e0e7ff; color: #1a3a6b; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; border: 1px solid #c7d2fe; letter-spacing: 1px; }
+        /* -- YENI EKLENEN RESIM CSS'LERI BITTI -- */
+
         .person-name { font-weight: 600; color: #1a1a2e; }
         .person-title { font-size: 12px; color: #6b7280; margin-top: 2px; }
         .badge-ext { display: inline-block; background: #eff6ff; color: #1a3a6b; font-weight: 600; font-size: 12px; padding: 3px 10px; border-radius: 5px; letter-spacing: 0.03em; }
@@ -160,8 +167,20 @@
                     <c:forEach var="kisi" items="${kisiler}">
                         <tr class="person-row">
                             <td>
-                                <div class="person-name">${kisi.firstName} ${kisi.lastName}</div>
-                                <div class="person-title">${kisi.titleName}</div>
+                                <div class="person-info-wrapper">
+                                    <c:choose>
+                                        <c:when test="${not empty kisi.photo}">
+                                            <img src="data:image/jpeg;base64,${kisi.photo}" class="profile-img" alt="${kisi.firstName}">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div class="default-avatar">${fn:substring(kisi.firstName, 0, 1)}${fn:substring(kisi.lastName, 0, 1)}</div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <div>
+                                        <div class="person-name">${kisi.firstName} ${kisi.lastName}</div>
+                                        <div class="person-title">${kisi.titleName}</div>
+                                    </div>
+                                </div>
                             </td>
                             <td>${not empty kisi.deptName ? kisi.deptName : '—'}</td>
                             <td>${not empty kisi.subDeptName ? kisi.subDeptName : '—'}</td>

@@ -1,9 +1,7 @@
 package duzce.bm.mf.telefonrehberi.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @ControllerAdvice
@@ -68,7 +65,10 @@ public class GlobalExceptionHandler {
     public String handleValidation(MethodArgumentNotValidException ex, Model model, HttpServletRequest request) {
         Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error ->
+                        errors.put(error.getField(), error.getDefaultMessage())
+                );
 
         LOG.error("[VALIDATION] {}", errors);
 
@@ -97,28 +97,4 @@ public class GlobalExceptionHandler {
         request.setAttribute("jakarta.servlet.error.status_code", 500);
 
         return "error";
-    }
-
-    @ExceptionHandler(InvalidOtpException.class)
-    public ResponseEntity<?> handleInvalidOtp(InvalidOtpException ex) {
-        Map<String, String> errorBody = new HashMap<>();
-        errorBody.put("error", "Invalid OTP");
-        errorBody.put("message", ex.getMessage());
-
-        return ResponseEntity.badRequest().body(errorBody);
-    }
-
-    @ExceptionHandler(WebserviceValidationException.class)
-    public ResponseEntity<?> handleValidationException(WebserviceValidationException e) {
-        List<FieldError> fieldErrors = e.getErrors().getFieldErrors();
-
-        Map<String, String> validationErrors = new HashMap<>();
-        for (FieldError fieldError : fieldErrors) {
-            String fieldName = fieldError.getField();
-            String errorMessage = fieldError.getDefaultMessage();
-            validationErrors.put(fieldName, errorMessage);
-        }
-        return ResponseEntity.badRequest().body(validationErrors);
-    }
-
-}
+    }}

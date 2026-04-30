@@ -57,33 +57,23 @@
             </div>
         </c:if>
 
-<form action="/login" method="post">
-    <div class="form-group">
-        <label for="email"><spring:message code="login.email" /></label>
-        <input type="email" id="email" name="email"
-               placeholder="<spring:message code="login.email.placeholder" />"
-               autocomplete="email" required value="${girisEmail}">
-    </div>
+        <form action="/login" method="post">
+            <div class="form-group">
+                <label for="email"><spring:message code="login.email" /></label>
+                <input type="email" id="email" name="email" placeholder="<spring:message code="login.email.placeholder" />"
+                       autocomplete="email" required value="${girisEmail}">
+            </div>
 
-    <div class="form-group">
-        <label for="password"><spring:message code="login.password" /></label>
-        <input type="password" id="password" name="password"
-               placeholder="<spring:message code="login.password.placeholder" />"
-               autocomplete="current-password" required>
-    </div>
+            <div class="form-group">
+                <label for="password"><spring:message code="login.password" /></label>
+                <input type="password" id="password" name="password"
+                       placeholder="<spring:message code="login.password.placeholder" />" autocomplete="current-password" required>
+            </div>
 
-    <button type="submit" class="btn-login">
-        <spring:message code="login.button" />
-    </button>
-</form>
+            <button type="submit" class="btn-login"><spring:message code="login.button" /></button>
+        </form>
 
-<a href="/forgot-password" class="back-link">
-    Şifremi Unuttum?
-</a>
-
-<a href="/" class="back-link">
-    ← <spring:message code="login.back" />
-</a>
+        <a href="/" class="back-link">← <spring:message code="login.back" /></a>
     </div>
 </main>
 

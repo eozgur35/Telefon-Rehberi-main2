@@ -49,7 +49,10 @@
         thead th { padding: 11px 16px; text-align: left; font-size: 11.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #6b7280; border-bottom: 1px solid #e2e4ea; white-space: nowrap; }
         tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.1s; }
         tbody tr:hover { background: #f5f8ff; }
-        tbody td { padding: 11px 16px; color: #374151; }
+        tbody td { padding: 11px 16px; color: #374151; vertical-align: middle; }
+        .person-info-wrapper { display: flex; align-items: center; gap: 12px; }
+        .profile-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid #e2e4ea; }
+        .default-avatar { width: 36px; height: 36px; border-radius: 50%; background: #e0e7ff; color: #1a3a6b; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; border: 1px solid #c7d2fe; letter-spacing: 1px; }
         .person-name { font-weight: 600; color: #1a1a2e; }
         .person-title { font-size: 12px; color: #6b7280; margin-top: 2px; }
         .td-actions { display: flex; gap: 8px; align-items: center; }
@@ -58,6 +61,7 @@
         .modal { background: #fff; border-radius: 12px; border: 1px solid #e2e4ea; padding: 2rem; width: 100%; max-width: 540px; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group.full { grid-column: 1 / -1; }
         .form-group label { font-size: 12.5px; font-weight: 600; color: #374151; }
         .form-group input, .form-group select { height: 40px; border: 1px solid #d1d5db; border-radius: 7px; padding: 0 12px; font-size: 14px; }
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem; }
@@ -128,8 +132,20 @@
             <c:forEach var="k" items="${kisiler}">
                 <tr class="person-row" data-name="${k.firstName} ${k.lastName}" data-person-id="${k.personId}" data-first-name="${k.firstName}" data-last-name="${k.lastName}" data-title="${k.titleName}" data-extension="${k.extensionNumber}" data-room="${k.roomNumber}" data-email="${k.email}" data-sub-id="${not empty k.subDeptId ? k.subDeptId : 0}">
                     <td>
-                        <div class="person-name">${k.firstName} ${k.lastName}</div>
-                        <div class="person-title">${k.titleName}</div>
+                        <div class="person-info-wrapper">
+                            <c:choose>
+                                <c:when test="${not empty k.photo}">
+                                    <img src="data:image/jpeg;base64,${k.photo}" class="profile-img" alt="${k.firstName}">
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="default-avatar">${fn:substring(k.firstName, 0, 1)}${fn:substring(k.lastName, 0, 1)}</div>
+                                </c:otherwise>
+                            </c:choose>
+                            <div>
+                                <div class="person-name">${k.firstName} ${k.lastName}</div>
+                                <div class="person-title">${k.titleName}</div>
+                            </div>
+                        </div>
                     </td>
                     <td>${not empty k.deptName ? k.deptName : '—'}</td>
                     <td>${not empty k.subDeptName ? k.subDeptName : '—'}</td>
@@ -154,7 +170,7 @@
 <div class="modal-overlay" id="modalEkle">
     <div class="modal">
         <h3><spring:message code="admin.modal.add.title" /></h3>
-        <form action="/admin/persons/create" method="post">
+        <form action="/admin/persons/create" method="post" enctype="multipart/form-data">
             <div class="form-grid">
                 <div class="form-group"><label><spring:message code="admin.field.firstname" /></label><input type="text" name="firstName" required></div>
                 <div class="form-group"><label><spring:message code="admin.field.lastname" /></label><input type="text" name="lastName" required></div>
@@ -162,10 +178,30 @@
                 <div class="form-group"><label><spring:message code="admin.field.ext" /></label><input type="text" name="extensionNumber"></div>
                 <div class="form-group"><label><spring:message code="admin.field.room" /></label><input type="text" name="roomNumber"></div>
                 <div class="form-group full"><label><spring:message code="admin.field.email" /></label><input type="email" name="email"></div>
-                <div class="form-group"><label><spring:message code="admin.select.dept" /></label><select id="ekle-deptSelect" onchange="loadSubDepts('ekle-deptSelect','ekle-subSelect')"><option value="">— <spring:message code="admin.select.first_dept" /> —</option><c:forEach var="d" items="${departments}"><option value="${d.departmentId}">${d.name}</option></c:forEach></select></div>
-                <div class="form-group"><label><spring:message code="admin.select.subdept" /></label><select id="ekle-subSelect" name="subDepartmentId"><option value="">— <spring:message code="admin.select.first_dept" /> —</option></select></div>
+
+                <div class="form-group">
+                    <label><spring:message code="admin.select.dept" /></label>
+                    <select id="ekle-deptSelect" onchange="loadSubDepts('ekle-deptSelect','ekle-subSelect')" required>
+                        <option value="">— <spring:message code="admin.select.first_dept" /> —</option>
+                        <c:forEach var="d" items="${departments}"><option value="${d.departmentId}">${d.name}</option></c:forEach>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><spring:message code="admin.select.subdept" /></label>
+                    <select id="ekle-subSelect" name="subDepartmentId" required>
+                        <option value="">— Bölüm Seçin —</option>
+                    </select>
+                </div>
+
+                <div class="form-group full">
+                    <label>Profil Resmi</label>
+                    <input type="file" name="file" accept="image/*" style="padding-top: 6px;">
+                </div>
             </div>
-            <div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal('modalEkle')"><spring:message code="admin.btn.cancel" /></button><button type="submit" class="btn btn-primary"><spring:message code="admin.btn.save" /></button></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('modalEkle')"><spring:message code="admin.btn.cancel" /></button>
+                <button type="submit" class="btn btn-primary"><spring:message code="admin.btn.save" /></button>
+            </div>
         </form>
     </div>
 </div>
@@ -173,7 +209,7 @@
 <div class="modal-overlay" id="modalDuzenle">
     <div class="modal">
         <h3><spring:message code="admin.modal.edit.title" /></h3>
-        <form action="/admin/persons/update" method="post">
+        <form action="/admin/persons/update" method="post" enctype="multipart/form-data">
             <input type="hidden" name="personId" id="editPersonId">
             <div class="form-grid">
                 <div class="form-group"><label><spring:message code="admin.field.firstname" /></label><input type="text" name="firstName" id="editFirstName" required></div>
@@ -182,10 +218,30 @@
                 <div class="form-group"><label><spring:message code="admin.field.ext" /></label><input type="text" name="extensionNumber" id="editExtension"></div>
                 <div class="form-group"><label><spring:message code="admin.field.room" /></label><input type="text" name="roomNumber" id="editRoom"></div>
                 <div class="form-group full"><label><spring:message code="admin.field.email" /></label><input type="email" name="email" id="editEmail"></div>
-                <div class="form-group"><label><spring:message code="admin.select.dept" /></label><select id="edit-deptSelect" onchange="loadSubDepts('edit-deptSelect','edit-subSelect')"><option value="">— <spring:message code="admin.select.first_dept" /> —</option><c:forEach var="d" items="${departments}"><option value="${d.departmentId}">${d.name}</option></c:forEach></select></div>
-                <div class="form-group"><label><spring:message code="admin.select.subdept" /></label><select id="edit-subSelect" name="subDepartmentId"><option value="">— <spring:message code="admin.select.first_dept" /> —</option></select></div>
+
+                <div class="form-group">
+                    <label><spring:message code="admin.select.dept" /></label>
+                    <select id="edit-deptSelect" onchange="loadSubDepts('edit-deptSelect','edit-subSelect')" required>
+                        <option value="">— <spring:message code="admin.select.first_dept" /> —</option>
+                        <c:forEach var="d" items="${departments}"><option value="${d.departmentId}">${d.name}</option></c:forEach>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><spring:message code="admin.select.subdept" /></label>
+                    <select id="edit-subSelect" name="subDepartmentId" required>
+                        <option value="">— Bölüm Seçin —</option>
+                    </select>
+                </div>
+
+                <div class="form-group full">
+                    <label>Profil Resmi (Değiştirmek istemiyorsanız boş bırakın)</label>
+                    <input type="file" name="file" accept="image/*" style="padding-top: 6px;">
+                </div>
             </div>
-            <div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal('modalDuzenle')"><spring:message code="admin.btn.cancel" /></button><button type="submit" class="btn btn-primary"><spring:message code="admin.btn.update" /></button></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('modalDuzenle')"><spring:message code="admin.btn.cancel" /></button>
+                <button type="submit" class="btn btn-primary"><spring:message code="admin.btn.update" /></button>
+            </div>
         </form>
     </div>
 </div>
@@ -195,28 +251,89 @@
         <h3><spring:message code="admin.modal.delete.title" /></h3>
         <form action="/admin/persons/delete" method="post">
             <input type="hidden" name="personId" id="deletePersonId">
-            <div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal('modalSil')"><spring:message code="admin.btn.cancel" /></button><button type="submit" class="btn btn-danger"><spring:message code="admin.btn.confirm_delete" /></button></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('modalSil')"><spring:message code="admin.btn.cancel" /></button>
+                <button type="submit" class="btn btn-danger"><spring:message code="admin.btn.confirm_delete" /></button>
+            </div>
         </form>
     </div>
 </div>
 
 <script>
     const allSubDepts = ${not empty subDepartmentsJson ? subDepartmentsJson : '[]'};
+
     function openModal(id) { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
     function loadSubDepts(deptSelId, subSelId, selectedSubId) {
         const deptId = parseInt(document.getElementById(deptSelId).value) || 0;
         const subSel = document.getElementById(subSelId);
-        subSel.innerHTML = '<option value="">— Bölüm Seç —</option>';
+        subSel.innerHTML = '<option value="">— Bölüm Seçin —</option>';
         if (!deptId) return;
         allSubDepts.filter(s => s.departmentId === deptId).forEach(s => {
             const opt = document.createElement('option');
-            opt.value = s.subDepartmentId; opt.textContent = s.name;
+            opt.value = s.subDepartmentId;
+            opt.textContent = s.name;
             if (selectedSubId && s.subDepartmentId === parseInt(selectedSubId)) opt.selected = true;
             subSel.appendChild(opt);
         });
     }
-    // ... diğer JS fonksiyonların aynı kalacak
+
+    function openEditFromRow(btn) {
+        const tr = btn.closest('tr');
+        document.getElementById('editPersonId').value = tr.dataset.personId;
+        document.getElementById('editFirstName').value = tr.dataset.firstName;
+        document.getElementById('editLastName').value = tr.dataset.lastName;
+        document.getElementById('editTitleName').value = tr.dataset.title;
+        document.getElementById('editExtension').value = tr.dataset.extension;
+        document.getElementById('editRoom').value = tr.dataset.room;
+        document.getElementById('editEmail').value = tr.dataset.email;
+
+
+        const subId = parseInt(tr.dataset.subId);
+        let deptId = "";
+        if(subId) {
+            const subDeptObj = allSubDepts.find(s => s.subDepartmentId === subId);
+            if(subDeptObj) deptId = subDeptObj.departmentId;
+        }
+
+
+        document.getElementById('edit-deptSelect').value = deptId;
+        loadSubDepts('edit-deptSelect', 'edit-subSelect', subId);
+
+        openModal('modalDuzenle');
+    }
+
+
+    function openDeleteFromRow(btn) {
+        const tr = btn.closest('tr');
+        document.getElementById('deletePersonId').value = tr.dataset.personId;
+        openModal('modalSil');
+    }
+
+
+    function filterTable() {
+        const deptFilter = document.getElementById('deptFilter').value.toLowerCase();
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('.person-row');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const deptText = row.children[1].textContent.toLowerCase();
+            const nameText = row.dataset.name.toLowerCase();
+            const matchDept = deptFilter === "" || deptText.includes(deptFilter);
+            const matchName = searchInput === "" || nameText.includes(searchInput);
+
+            if (matchDept && matchName) {
+                row.style.display = "";
+                visibleCount++;
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        document.getElementById('resultCount').querySelector('span').textContent = visibleCount;
+    }
 </script>
 </body>
 </html>
