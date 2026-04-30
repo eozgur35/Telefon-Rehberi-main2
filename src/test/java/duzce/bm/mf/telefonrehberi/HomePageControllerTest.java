@@ -33,12 +33,16 @@ public class HomePageControllerTest {
                 .build();
     }
 
+
+    // anasayfa aciliyor mu?
+    // veritabani bagi olmadiginda internal error donuyor normalde!
     @Test
     public void testHomePage() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk());
     }
 
+    // 1 adli Departmant id sine sahip departmanlarla test ediyor.
     @Test
     public void testHomePageWithDepartment() throws Exception {
         mockMvc.perform(get("/")
@@ -46,6 +50,7 @@ public class HomePageControllerTest {
                 .andExpect(status().isOk());
     }
 
+    // usttekinin subdepartment hali
     @Test
     public void testHomePageWithSubDepartment() throws Exception {
         mockMvc.perform(get("/")
