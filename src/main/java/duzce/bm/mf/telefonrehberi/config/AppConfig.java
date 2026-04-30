@@ -1,7 +1,10 @@
 package duzce.bm.mf.telefonrehberi.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import duzce.bm.mf.telefonrehberi.entity.*;
+import duzce.bm.mf.telefonrehberi.entity.Department;
+import duzce.bm.mf.telefonrehberi.entity.Person;
+import duzce.bm.mf.telefonrehberi.entity.SubDepartment;
+import duzce.bm.mf.telefonrehberi.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -12,8 +15,6 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -28,7 +29,6 @@ import java.util.Properties;
 import static org.hibernate.cfg.AvailableSettings.*;
 
 @PropertySource(value = "classpath:hibernate.properties", encoding = "UTF-8")
-@PropertySource(value = "classpath:application.properties", encoding = "UTF-8")
 @EnableTransactionManagement
 @Configuration
 @ComponentScan(basePackages = "duzce.bm.mf.telefonrehberi")
@@ -57,7 +57,7 @@ public class AppConfig {
         properties.put(C3P0_CONFIG_PREFIX + ".initialPoolSize", environment.getProperty("hibernate.c3p0.initialPoolSize"));
 
         factoryBean.setHibernateProperties(properties);
-        factoryBean.setAnnotatedClasses(Department.class, Person.class, SubDepartment.class, User.class, Otp.class);
+        factoryBean.setAnnotatedClasses(Department.class, Person.class, SubDepartment.class, User.class);
         return factoryBean;
     }
 
@@ -79,25 +79,6 @@ public class AppConfig {
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
-    }
-
-    @Bean
-    public JavaMailSender javaMailSender() {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-
-        mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587);
-
-        mailSender.setUsername("sifresifirladuzce@gmail.com");
-        mailSender.setPassword("lkwu hive bldj aiwq");
-
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
-
-        return mailSender;
     }
 
 }

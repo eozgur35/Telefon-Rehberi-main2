@@ -12,21 +12,23 @@ public class PersonDto {
     private String subDeptName;
     private int subDeptId;
     private String deptName;
+    private String photo;
 
     public PersonDto() {
     }
 
-    public PersonDto(int personId,String firstName, String lastName, String titleName, String extensionNumber, String roomNumber,String email,String deptName, int subDeptId, String subDeptName) {
-        this.deptName = deptName;
-        this.email = email;
-        this.extensionNumber = extensionNumber;
+    public PersonDto(int personId, String firstName, String lastName, String titleName, String extensionNumber, String roomNumber, String email, String subDeptName, int subDeptId, String deptName, String photo) {
+        this.personId = personId;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.personId = personId;
-        this.roomNumber = roomNumber;
-        this.subDeptId = subDeptId;
-        this.subDeptName = subDeptName;
         this.titleName = titleName;
+        this.extensionNumber = extensionNumber;
+        this.roomNumber = roomNumber;
+        this.email = email;
+        this.subDeptName = subDeptName;
+        this.subDeptId = subDeptId;
+        this.deptName = deptName;
+        this.photo = photo;
     }
 
     public String getDeptName() {
@@ -107,5 +109,13 @@ public class PersonDto {
 
     public void setTitleName(String titleName) {
         this.titleName = titleName;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public String getPhoto() {
+        return photo;
     }
 }
