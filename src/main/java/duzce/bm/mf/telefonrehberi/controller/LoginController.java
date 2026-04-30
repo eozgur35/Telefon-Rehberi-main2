@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,9 @@ public class LoginController {
 
     @Autowired
     MessageSource messageSource;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @GetMapping("/login")
     public String loginPage(HttpSession session, Model model, @RequestParam(name = "girisEmail", required = false) String email) {
@@ -56,8 +60,7 @@ public class LoginController {
             model.addAttribute("girisEmail", email);
             return "login";
         }
-
-        if (!userDto.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, userDto.getPassword())) {
             logger.warn("Hatalı şifre denemesi: {}", email);
             model.addAttribute("hata", messageSource.getMessage("login.password.invalid", null, LocaleContextHolder.getLocale()));
             model.addAttribute("girisEmail", email);
