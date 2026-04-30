@@ -51,29 +51,39 @@
         <p><spring:message code="login.admin.desc" /></p>
 
         <c:if test="${not empty hata}">
-            <div class="error-box">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <span>${hata}</span>
-            </div>
+        <div class="error-box">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>${hata}</span>
+        </div>
         </c:if>
 
         <form action="/login" method="post">
             <div class="form-group">
                 <label for="email"><spring:message code="login.email" /></label>
-                <input type="email" id="email" name="email" placeholder="<spring:message code="login.email.placeholder" />"
+                <input type="email" id="email" name="email"
+                       placeholder="<spring:message code="login.email.placeholder" />"
                        autocomplete="email" required value="${girisEmail}">
             </div>
 
             <div class="form-group">
                 <label for="password"><spring:message code="login.password" /></label>
                 <input type="password" id="password" name="password"
-                       placeholder="<spring:message code="login.password.placeholder" />" autocomplete="current-password" required>
+                       placeholder="<spring:message code="login.password.placeholder" />"
+                       autocomplete="current-password" required>
             </div>
 
-            <button type="submit" class="btn-login"><spring:message code="login.button" /></button>
+            <button type="submit" class="btn-login">
+                <spring:message code="login.button" />
+            </button>
         </form>
 
-        <a href="/" class="back-link">← <spring:message code="login.back" /></a>
+        <a href="/forgot-password" class="back-link">
+            Şifremi Unuttum?
+        </a>
+
+        <a href="/" class="back-link">
+            ← <spring:message code="login.back" />
+        </a>
     </div>
 </main>
 

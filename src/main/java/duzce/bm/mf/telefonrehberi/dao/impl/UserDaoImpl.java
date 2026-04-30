@@ -1,17 +1,15 @@
 package duzce.bm.mf.telefonrehberi.dao.impl;
-
 import duzce.bm.mf.telefonrehberi.dao.UserDao;
 import duzce.bm.mf.telefonrehberi.entity.User;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 
 @Repository
 public class UserDaoImpl implements UserDao {
@@ -30,4 +28,14 @@ public class UserDaoImpl implements UserDao {
         Query<User> query = session.createQuery(criteriaQuery);
         return query.getSingleResult();
     }
+
+    @Override
+    public void save(User user) {
+        try {
+            sessionFactory.getCurrentSession().save(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
