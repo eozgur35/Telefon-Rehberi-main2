@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><spring:message code="login.page.title" /></title>
+    <title>Şifre Sıfırlama | <spring:message code="app.name" /></title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f5f6f8; min-height: 100vh; display: flex; flex-direction: column; }
@@ -20,13 +20,12 @@
         .login-card { background: #fff; border: 1px solid #e2e4ea; border-radius: 12px; padding: 2.5rem 2rem; width: 100%; max-width: 400px; box-shadow: 0 4px 24px rgba(26,58,107,0.07); }
         .login-card h2 { font-size: 20px; font-weight: 600; color: #1a1a2e; margin-bottom: 6px; }
         .login-card p { font-size: 13.5px; color: #6b7280; margin-bottom: 2rem; }
-        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.5rem; }
         .form-group label { font-size: 13px; font-weight: 600; color: #374151; }
         .form-group input { height: 42px; border: 1px solid #d1d5db; border-radius: 8px; padding: 0 14px; font-size: 14px; font-family: inherit; color: #1a1a2e; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
         .form-group input:focus { border-color: #1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,0.1); }
-        .error-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 14px; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #b91c1c; }
         .btn-login { width: 100%; height: 44px; background: #1a3a6b; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 0.5rem; transition: background 0.15s; }
-        .btn-login:hover { background: #15306080; }
+        .btn-login:hover { background: #142d54; }
         .back-link { display: block; text-align: center; margin-top: 1.25rem; font-size: 13px; color: #1a3a6b; text-decoration: none; }
         .back-link:hover { text-decoration: underline; }
         footer { background: #1a3a6b; color: rgba(255,255,255,0.65); text-align: center; padding: 14px 2rem; font-size: 12px; }
@@ -47,43 +46,21 @@
 
 <main>
     <div class="login-card">
-        <h2><spring:message code="login.admin.title" /></h2>
-        <p><spring:message code="login.admin.desc" /></p>
+        <h2>Şifre Sıfırlama</h2>
+        <p>E-posta adresinizi girin, size bir doğrulama kodu (OTP) gönderelim.</p>
 
-        <c:if test="${not empty hata}">
-            <div class="error-box">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <span>${hata}</span>
+        <form action="/forgotten-password-send-otp" method="post">
+            <div class="form-group">
+                <label for="email">E-posta</label>
+                <input type="email" id="email" name="email" placeholder="ornek@kurum.edu.tr" required>
             </div>
-        </c:if>
 
-<form action="/login" method="post">
-    <div class="form-group">
-        <label for="email"><spring:message code="login.email" /></label>
-        <input type="email" id="email" name="email"
-               placeholder="<spring:message code="login.email.placeholder" />"
-               autocomplete="email" required value="${girisEmail}">
-    </div>
+            <button type="submit" class="btn-login">OTP Gönder</button>
+        </form>
 
-    <div class="form-group">
-        <label for="password"><spring:message code="login.password" /></label>
-        <input type="password" id="password" name="password"
-               placeholder="<spring:message code="login.password.placeholder" />"
-               autocomplete="current-password" required>
-    </div>
-
-    <button type="submit" class="btn-login">
-        <spring:message code="login.button" />
-    </button>
-</form>
-
-<a href="/forgot-password" class="back-link">
-    Şifremi Unuttum?
-</a>
-
-<a href="/" class="back-link">
-    ← <spring:message code="login.back" />
-</a>
+        <a href="/login" class="back-link">
+            ← Giriş Sayfasına Dön
+        </a>
     </div>
 </main>
 

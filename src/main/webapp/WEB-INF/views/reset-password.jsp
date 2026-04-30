@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><spring:message code="login.page.title" /></title>
+    <title>Yeni Şifre Belirleme | <spring:message code="app.name" /></title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f5f6f8; min-height: 100vh; display: flex; flex-direction: column; }
@@ -24,11 +24,8 @@
         .form-group label { font-size: 13px; font-weight: 600; color: #374151; }
         .form-group input { height: 42px; border: 1px solid #d1d5db; border-radius: 8px; padding: 0 14px; font-size: 14px; font-family: inherit; color: #1a1a2e; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
         .form-group input:focus { border-color: #1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,0.1); }
-        .error-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 14px; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #b91c1c; }
-        .btn-login { width: 100%; height: 44px; background: #1a3a6b; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 0.5rem; transition: background 0.15s; }
-        .btn-login:hover { background: #15306080; }
-        .back-link { display: block; text-align: center; margin-top: 1.25rem; font-size: 13px; color: #1a3a6b; text-decoration: none; }
-        .back-link:hover { text-decoration: underline; }
+        .btn-login { width: 100%; height: 44px; background: #1a3a6b; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 1rem; transition: background 0.15s; }
+        .btn-login:hover { background: #142d54; }
         footer { background: #1a3a6b; color: rgba(255,255,255,0.65); text-align: center; padding: 14px 2rem; font-size: 12px; }
         footer span { color: rgba(255,255,255,0.9); font-weight: 500; }
     </style>
@@ -47,43 +44,28 @@
 
 <main>
     <div class="login-card">
-        <h2><spring:message code="login.admin.title" /></h2>
-        <p><spring:message code="login.admin.desc" /></p>
-
+        <h2>Yeni Şifre Belirle</h2>
+        <p>Lütfen hesabınız için yeni bir şifre oluşturun.</p>
         <c:if test="${not empty hata}">
-            <div class="error-box">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <span>${hata}</span>
+            <div style="background:#ffe5e5; color:#b00020; padding:10px; border-radius:6px; margin-bottom:10px;">
+                ${hata}
             </div>
         </c:if>
+        <form action="/forgotten-password-reset" method="post">
+            <input type="hidden" name="email" value="${email}">
 
-<form action="/login" method="post">
-    <div class="form-group">
-        <label for="email"><spring:message code="login.email" /></label>
-        <input type="email" id="email" name="email"
-               placeholder="<spring:message code="login.email.placeholder" />"
-               autocomplete="email" required value="${girisEmail}">
-    </div>
+            <div class="form-group">
+                <label for="newPassword">Yeni Şifre</label>
+                <input type="password" id="newPassword" name="newPassword" placeholder="••••••••" required autofocus>
+            </div>
 
-    <div class="form-group">
-        <label for="password"><spring:message code="login.password" /></label>
-        <input type="password" id="password" name="password"
-               placeholder="<spring:message code="login.password.placeholder" />"
-               autocomplete="current-password" required>
-    </div>
+            <div class="form-group">
+                <label for="newPasswordAgain">Yeni Şifre (Tekrar)</label>
+                <input type="password" id="newPasswordAgain" name="newPasswordAgain" placeholder="••••••••" required>
+            </div>
 
-    <button type="submit" class="btn-login">
-        <spring:message code="login.button" />
-    </button>
-</form>
-
-<a href="/forgot-password" class="back-link">
-    Şifremi Unuttum?
-</a>
-
-<a href="/" class="back-link">
-    ← <spring:message code="login.back" />
-</a>
+            <button type="submit" class="btn-login">Şifreyi Güncelle</button>
+        </form>
     </div>
 </main>
 
