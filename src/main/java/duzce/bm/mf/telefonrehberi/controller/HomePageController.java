@@ -3,13 +3,13 @@ package duzce.bm.mf.telefonrehberi.controller;
 import duzce.bm.mf.telefonrehberi.dto.DepartmentDto;
 import duzce.bm.mf.telefonrehberi.dto.PersonDto;
 import duzce.bm.mf.telefonrehberi.dto.SubDepartmentDto;
+import duzce.bm.mf.telefonrehberi.scheduler.MotivationScheduler;
 import duzce.bm.mf.telefonrehberi.services.AdminService;
 import duzce.bm.mf.telefonrehberi.services.DepartmentService;
 import duzce.bm.mf.telefonrehberi.services.SubDepartmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +32,9 @@ public class HomePageController {
 
     @Autowired
     SubDepartmentService subDepartmentService;
+
+    @Autowired
+    private MotivationScheduler motivationScheduler;
 
     @GetMapping("/")
     public String homePage(Model model,
@@ -77,6 +80,7 @@ public class HomePageController {
         model.addAttribute("selectedDepartmentId", departmentId);
         model.addAttribute("selectedSubId", subDepartmentId);
         model.addAttribute("kisiler", personDtoList);
+        model.addAttribute("motivation", motivationScheduler.getMotivationDto());
 
         return "rehber";
     }

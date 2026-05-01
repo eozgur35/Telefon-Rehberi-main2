@@ -21,7 +21,6 @@ import java.util.Properties;
 import static org.hibernate.cfg.AvailableSettings.*;
 
 @PropertySource(value = "classpath:hibernate.properties", encoding = "UTF-8")
-@PropertySource(value = "classpath:application.properties", encoding = "UTF-8")
 @EnableTransactionManagement
 @Configuration
 @ComponentScan(basePackages = "duzce.bm.mf.telefonrehberi")
