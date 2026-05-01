@@ -9,6 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><spring:message code="app.name" /></title>
+    <meta http-equiv="refresh" content="60">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f5f6f8; color: #1a1a2e; min-height: 100vh; display: flex; flex-direction: column; }
@@ -133,6 +134,29 @@
         </div>
     </div>
 </div>
+
+<c:if test="${not empty motivation}">
+    <div style="
+        margin: 16px 2rem;
+        padding: 14px 18px;
+        background: #ffffff;
+        border-radius: 10px;
+        border: 1px solid #e2e4ea;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    ">
+        <div style="font-size:12px; color:#6b7280; margin-bottom:6px;">
+            ✨ Günün Motivasyon Sözü
+        </div>
+
+        <div style="font-size:14px; font-weight:500; color:#1a1a2e;">
+            "${motivation.quote}"
+        </div>
+
+        <div style="font-size:12px; margin-top:6px; color:#6b7280;">
+            - ${motivation.auth}
+        </div>
+    </div>
+</c:if>
 
 <main>
     <div class="table-card">
