@@ -3,6 +3,7 @@ package duzce.bm.mf.telefonrehberi.scheduler;
 import duzce.bm.mf.telefonrehberi.dao.PersonDao;
 import duzce.bm.mf.telefonrehberi.entity.Person;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,12 +20,15 @@ public class NightlyFileScheduler {
     @Autowired
     PersonDao personDao;
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Value("${file.export.fullpath}")
+    private String fullPath;
+
+    @Scheduled(fixedRate = 60000, initialDelay = 1000)
     public void writePersonsToFile() {
         try {
             List<Person> persons = personDao.getAllPersons();
 
-            String fileName = "/Users/beyzayucel/Desktop/persons-" + LocalDate.now() + ".csv";
+            String fileName = fullPath + LocalDate.now() + ".csv";
             FileOutputStream fos = new FileOutputStream(fileName);
 
             fos.write(0xEF);
