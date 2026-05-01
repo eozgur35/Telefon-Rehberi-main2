@@ -2,6 +2,7 @@ package duzce.bm.mf.telefonrehberi.dao.impl;
 
 import duzce.bm.mf.telefonrehberi.dao.PersonDao;
 import duzce.bm.mf.telefonrehberi.entity.Person;
+import jakarta.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
+@Transactional
 public class PersonDaoImpl implements PersonDao {
 
     @Autowired
