@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.servlet.ModelAndView;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,6 +86,17 @@ public class GlobalExceptionHandler {
         return "error";
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ModelAndView handleUserNotFoundException(UserNotFoundException ex) {
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("user-not-found-error");
+        mav.addObject("message", ex.getMessage());
+        mav.addObject("title", "Kullanıcı Bulunamadı");
+
+        return mav;
+    }
+
     @ExceptionHandler(Exception.class)
     public String handleGeneral(Exception ex, Model model, HttpServletRequest request) {
         LOG.error("[500] Unexpected error", ex);
@@ -97,4 +110,6 @@ public class GlobalExceptionHandler {
         request.setAttribute("jakarta.servlet.error.status_code", 500);
 
         return "error";
-    }}
+    }
+
+}
