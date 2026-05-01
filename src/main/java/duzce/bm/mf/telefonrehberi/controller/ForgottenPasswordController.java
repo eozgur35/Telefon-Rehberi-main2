@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @Transactional
-public class ForgottenPasswordController extends BaseController {
+public class ForgottenPasswordController {
 
     @Autowired
     SendEmailService sendEmailService;
