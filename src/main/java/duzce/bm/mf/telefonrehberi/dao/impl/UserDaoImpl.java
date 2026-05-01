@@ -1,6 +1,7 @@
 package duzce.bm.mf.telefonrehberi.dao.impl;
 import duzce.bm.mf.telefonrehberi.dao.UserDao;
 import duzce.bm.mf.telefonrehberi.entity.User;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -26,7 +27,11 @@ public class UserDaoImpl implements UserDao {
         Predicate predicateEmail = criteriaBuilder.equal(root.get("email"), email);
         criteriaQuery.select(root).where(predicateEmail);
         Query<User> query = session.createQuery(criteriaQuery);
-        return query.getSingleResult();
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override

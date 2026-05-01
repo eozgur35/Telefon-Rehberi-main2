@@ -6,6 +6,7 @@ import duzce.bm.mf.telefonrehberi.dto.ForgottenPasswordOtpDto;
 import duzce.bm.mf.telefonrehberi.entity.Otp;
 import duzce.bm.mf.telefonrehberi.entity.User;
 import duzce.bm.mf.telefonrehberi.exception.InvalidOtpException;
+import duzce.bm.mf.telefonrehberi.exception.UserNotFoundException;
 import duzce.bm.mf.telefonrehberi.util.OtpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,9 @@ public class SendEmailService {
 
     public ResponseEntity<?> forgetPasswordService(ForgottenPasswordOtpDto forgottenPasswordOtpDto) {
         User user = userDao.findByEmail(forgottenPasswordOtpDto.getEmail());
+        if (Objects.isNull(user)) {
+            throw new UserNotFoundException("Bu e-posta ile kayıtlı kullanıcı bulunamadı.");
+        }
         String otpCode = otpUtil.createOtp(user.getEmail(), String.valueOf(user.getUserId()));
 
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
