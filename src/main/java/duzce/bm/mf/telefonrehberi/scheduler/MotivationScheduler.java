@@ -15,7 +15,7 @@ public class MotivationScheduler {
 
     MotivationDto motivationDto;
 
-    @Scheduled(fixedRate = 60000, initialDelay = 1000)
+    @Scheduled(fixedRate = 300000, initialDelay = 1000)
     public void updateMotivation() {
         motivationDto = motivationService.getMotivation();
         System.out.println("Yeni motivasyon sözü: " + motivationDto.getQuote() + " - " + motivationDto.getAuth());
