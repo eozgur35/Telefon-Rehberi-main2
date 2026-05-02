@@ -29,6 +29,7 @@ public class OtpDaoImpl implements OtpDao {
         Predicate predicateDepartment = criteriaBuilder.equal(root.get("email"), email);
         criteriaQuery.select(root).where(predicateDepartment).orderBy(criteriaBuilder.desc(root.get("id")));
         Query<Otp> query = session.createQuery(criteriaQuery);
+        query.setMaxResults(1);
         return query.getSingleResult();
     }
 
