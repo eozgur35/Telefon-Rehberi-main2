@@ -60,7 +60,7 @@ public class ForgottenPasswordController {
 
         if (!newPassword.equals(newPasswordAgain)) {
             model.addAttribute("email", email);
-            model.addAttribute("hata", messageSource.getMessage("password.reset.success", null, LocaleContextHolder.getLocale()));
+            model.addAttribute("hata", messageSource.getMessage("password.not.match", null, LocaleContextHolder.getLocale()));
             return "reset-password";
         }
 
@@ -71,7 +71,7 @@ public class ForgottenPasswordController {
 
         sendEmailService.resetPassword(dto);
 
-        model.addAttribute("mesaj", messageSource.getMessage("password.not.match", null, LocaleContextHolder.getLocale()));
+        model.addAttribute("mesaj", messageSource.getMessage("password.reset.success", null, LocaleContextHolder.getLocale()));
         return "login";
     }
 }

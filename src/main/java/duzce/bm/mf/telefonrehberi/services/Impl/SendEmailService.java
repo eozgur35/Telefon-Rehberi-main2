@@ -37,7 +37,7 @@ public class SendEmailService {
     @Autowired
     JavaMailSender javaMailSender;
 
-    public ResponseEntity<?> forgetPasswordService(ForgottenPasswordOtpDto forgottenPasswordOtpDto) {
+    public void forgetPasswordService(ForgottenPasswordOtpDto forgottenPasswordOtpDto) {
         User user = userDao.findByEmail(forgottenPasswordOtpDto.getEmail());
         if (Objects.isNull(user)) {
             throw new UserNotFoundException("Bu e-posta ile kayıtlı kullanıcı bulunamadı.");
@@ -49,11 +49,9 @@ public class SendEmailService {
         simpleMailMessage.setSubject("Reset Password");
         simpleMailMessage.setText("Otp sıfırlama kodu: " + otpCode);
         javaMailSender.send(simpleMailMessage);
-
-        return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> verifyOtp(ForgottenPasswordOtpDto forgottenPasswordOtpDto) {
+    public void verifyOtp(ForgottenPasswordOtpDto forgottenPasswordOtpDto) {
         Otp otp = otpDao.findTopByEmailOrderByIdDesc(forgottenPasswordOtpDto.getEmail());
         if (Objects.isNull(otp) || !forgottenPasswordOtpDto.getOtp().equals(otp.getOtp())) {
             if (Objects.nonNull(otp)) {
@@ -64,7 +62,6 @@ public class SendEmailService {
         }
         otp.setVerified(true);
         otpDao.save(otp);
-        return ResponseEntity.ok().build();
     }
 
     public void resetPassword(ForgottenPasswordOtpDto forgottenPasswordOtpDto) {
