@@ -4,13 +4,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
+import java.util.Objects;
 
 @Component
 public class FileUtil {
 
     public static String convertToBase64(MultipartFile file) {
 
-        if (file == null || file.isEmpty()) {
+        if (Objects.isNull(file) || file.isEmpty()) {
             return null;
         }
 
