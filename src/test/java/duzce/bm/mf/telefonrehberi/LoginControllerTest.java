@@ -34,7 +34,8 @@ public class LoginControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }
 
-    // Login sayfasının yuklenmesini kontrol ediyor
+    // login sayfasinin acilip acilmadigini test eder
+    // ayriyeten sayfanin donus view i "login" olmali
     @Test
     public void testLoginPageLoad() throws Exception {
         mockMvc.perform(get("/login"))
@@ -42,7 +43,7 @@ public class LoginControllerTest {
                 .andExpect(view().name("login"));
     }
 
-    // Hatalı giriş denemesini test eder (Sayfa yine login döner)
+    // hatali bir giris denemesinde sistem yeniden login sayfasina atmali
     @Test
     public void testLoginFailure() throws Exception {
         mockMvc.perform(post("/login")

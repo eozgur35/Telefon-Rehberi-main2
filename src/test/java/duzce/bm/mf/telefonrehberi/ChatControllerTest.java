@@ -34,7 +34,7 @@ public class ChatControllerTest {
                 .build();
     }
 
-    // Chat endpoint'ine boş mesaj gönderildiğinde Bad Request (400) dönmeli
+    // ai e bos bir mesaj gonderiyor, donus tipi bad request olmali.
     @Test
     public void testChatEmptyMessage() throws Exception {
         mockMvc.perform(post("/api/chat")
@@ -43,8 +43,9 @@ public class ChatControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    // Geçerli bir mesaj gönderildiğinde sistemin tepkisini test eder
-    // Not: Bu gerçek bir API çağrısı tetikleyebilir (Entegrasyon testi olduğu için)
+    // gecerli bir mesaj gondererek sistemi test ediyor
+    // 200 donerse test basarili
+    // api de sikinti olunca hata verebiliyor..
     @Test
     public void testChatMessageSuccess() throws Exception {
         mockMvc.perform(post("/api/chat")
