@@ -23,7 +23,7 @@ public class NightlyFileScheduler {
     @Value("${file.export.fullpath}")
     private String fullPath;
 
-    @Scheduled(fixedRate = 60000, initialDelay = 1000)
+    @Scheduled(cron = "0 0 2 * * *")
     public void writePersonsToFile() {
         try {
             List<Person> persons = personDao.getAllPersons();

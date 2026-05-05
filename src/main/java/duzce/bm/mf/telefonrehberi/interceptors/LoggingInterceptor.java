@@ -2,13 +2,16 @@ package duzce.bm.mf.telefonrehberi.interceptors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.hibernate.annotations.Comment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Enumeration;
 import java.util.Objects;
 
+@Component
 public class LoggingInterceptor implements HandlerInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingInterceptor.class);
@@ -21,6 +24,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
 
         StringBuilder params = new StringBuilder();
 
+        //HttpServletRequest bize modern list yerine Enumeration verir
         Enumeration<String> paramNames = request.getParameterNames();
         while (paramNames.hasMoreElements()) {
             String name = paramNames.nextElement();
