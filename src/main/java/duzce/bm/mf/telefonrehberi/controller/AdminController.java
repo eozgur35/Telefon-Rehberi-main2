@@ -8,6 +8,7 @@ import duzce.bm.mf.telefonrehberi.dto.PersonDto;
 import duzce.bm.mf.telefonrehberi.services.AdminService;
 import duzce.bm.mf.telefonrehberi.services.DepartmentService;
 import duzce.bm.mf.telefonrehberi.services.SubDepartmentService;
+import duzce.bm.mf.telefonrehberi.util.FileUtil;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +53,6 @@ public class AdminController {
         logger.debug("Person sayısı: {}", personDtoList.size());
         logger.debug("SubDepartment sayısı: {}", subDepartDtoList.size());
 
-        model.addAttribute("subDepartments", subDepartDtoList);
-
         try {
             model.addAttribute("subDepartmentsJson", objectMapper.writeValueAsString(subDepartDtoList));
         }
@@ -78,22 +77,14 @@ public class AdminController {
                                @RequestParam(value = "roomNumber", required = false) String roomNumber,
                                @RequestParam(value = "email", required = false) String email,
                                @RequestParam(value = "subDepartmentId", required = false) Integer subDepartmentId,
-                               @RequestParam(value = "file", required = false) MultipartFile file, // Yeni Eklendi
+                               @RequestParam(value = "file", required = false) MultipartFile file,
                                RedirectAttributes ra) {
 
         logger.info("Person create isteği: {} {}", firstName, lastName);
 
         int subId = (Objects.nonNull(subDepartmentId)) ? subDepartmentId : 0;
 
-        //Resmi base64e cevirme
-        String base64Photo = null;
-        if (file != null && !file.isEmpty()) {
-            try {
-                base64Photo = Base64.getEncoder().encodeToString(file.getBytes());
-            } catch (Exception e) {
-                logger.error("Resim işlenirken hata oluştu", e);
-            }
-        }
+        String base64Photo = FileUtil.convertToBase64(file);
 
         PersonDto personDto = new PersonDto(0, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subId, null, base64Photo);
 
@@ -115,21 +106,14 @@ public class AdminController {
                                @RequestParam(value = "roomNumber", required = false) String roomNumber,
                                @RequestParam(value = "email", required = false) String email,
                                @RequestParam(value = "subDepartmentId", required = false) Integer subDepartmentId,
-                               @RequestParam(value = "file", required = false) MultipartFile file, // Yeni Eklendi
+                               @RequestParam(value = "file", required = false) MultipartFile file,
                                RedirectAttributes ra) {
 
         logger.info("Person update isteği: id={}", personId);
 
         int subId = (Objects.nonNull(subDepartmentId)) ? subDepartmentId : 0;
 
-        String base64Photo = null;
-        if (file != null && !file.isEmpty()) {
-            try {
-                base64Photo = Base64.getEncoder().encodeToString(file.getBytes());
-            } catch (Exception e) {
-                logger.error("Resim işlenirken hata oluştu", e);
-            }
-        }
+        String base64Photo = FileUtil.convertToBase64(file);
 
         PersonDto personDto = new PersonDto(personId, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subId, null, base64Photo);
 
