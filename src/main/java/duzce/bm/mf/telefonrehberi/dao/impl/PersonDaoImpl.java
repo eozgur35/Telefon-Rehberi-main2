@@ -28,6 +28,7 @@ public class PersonDaoImpl implements PersonDao {
         return sessionFactory.getCurrentSession().get(Person.class, id);
     }
 
+    //Gelen subdepartmanid biriminde olan kisiler listesi
     @Override
     public List<Person> findBySubdepartmentSubDepartmentId(int subDepartmentId) {
         Session session = sessionFactory.getCurrentSession();
@@ -40,6 +41,7 @@ public class PersonDaoImpl implements PersonDao {
         return query.getResultList();
     }
 
+    //Gelen departmanid bolumunde olan kisiler listesi
     @Override
     public List<Person> findBySubdepartmentDepartmentDepartmentId(int departmentId) {
         Session session = sessionFactory.getCurrentSession();
