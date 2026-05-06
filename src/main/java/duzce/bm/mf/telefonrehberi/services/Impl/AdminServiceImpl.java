@@ -35,7 +35,7 @@ public class AdminServiceImpl implements AdminService {
         logger.info("Tüm personeller getiriliyor");
 
         List<Person> personList = personDao.getAllPersons();
-        List<PersonDto> personDto = new ArrayList<>();
+        List<PersonDto> personDtoList = new ArrayList<>();
 
         for (Person person : personList) {
             PersonDto newPersonDto = new PersonDto();
@@ -44,16 +44,13 @@ public class AdminServiceImpl implements AdminService {
             newPersonDto.setDeptName(person.getSubdepartment().getDepartment().getName());
             newPersonDto.setSubDeptId(person.getSubdepartment().getSubDepartmentId());
             newPersonDto.setSubDeptName(person.getSubdepartment().getName());
+            setPhotoAsBase64(person, newPersonDto);
 
-            if (person.getPhoto() != null) {
-                String base64Photo = Base64.getEncoder().encodeToString(person.getPhoto());
-                newPersonDto.setPhoto(base64Photo);
-            }
-            personDto.add(newPersonDto);
+            personDtoList.add(newPersonDto);
         }
 
-        logger.debug("Toplam personel sayısı: {}", personDto.size());
-        return personDto;
+        logger.debug("Toplam personel sayısı: {}", personDtoList.size());
+        return personDtoList;
     }
 
     public void saveOrUpdatePerson(PersonDto personDto) {
@@ -120,11 +117,8 @@ public class AdminServiceImpl implements AdminService {
             personDto.setDeptName(person.getSubdepartment().getDepartment().getName());
             personDto.setSubDeptId(person.getSubdepartment().getSubDepartmentId());
             personDto.setSubDeptName(person.getSubdepartment().getName());
+            setPhotoAsBase64(person, personDto);
 
-            if (person.getPhoto() != null) {
-                String base64Photo = Base64.getEncoder().encodeToString(person.getPhoto());
-                personDto.setPhoto(base64Photo);
-            }
             dtoPerson.add(personDto);
         }
 
@@ -146,15 +140,20 @@ public class AdminServiceImpl implements AdminService {
             personDto.setDeptName(person.getSubdepartment().getDepartment().getName());
             personDto.setSubDeptId(person.getSubdepartment().getSubDepartmentId());
             personDto.setSubDeptName(person.getSubdepartment().getName());
+            setPhotoAsBase64(person, personDto);
 
-            if (person.getPhoto() != null) {
-                String base64Photo = Base64.getEncoder().encodeToString(person.getPhoto());
-                personDto.setPhoto(base64Photo);
-            }
             personDtoList.add(personDto);
         }
 
         logger.debug("Department bazlı personel sayısı: {}", personDtoList.size());
         return personDtoList;
     }
+
+    private void setPhotoAsBase64(Person person, PersonDto personDto) {
+        if (person.getPhoto() != null) {
+            String base64Photo = Base64.getEncoder().encodeToString(person.getPhoto());
+            personDto.setPhoto(base64Photo);
+        }
+    }
+
 }
