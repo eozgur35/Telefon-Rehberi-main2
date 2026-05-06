@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Base64; // Base64 çevirimi için eklendi
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,7 +32,6 @@ public class AdminServiceImpl implements AdminService {
     PersonDao personDao;
 
     public List<PersonDto> getAllPerson() {
-
         logger.info("Tüm personeller getiriliyor");
 
         List<Person> personList = personDao.getAllPersons();
@@ -46,23 +45,18 @@ public class AdminServiceImpl implements AdminService {
             newPersonDto.setSubDeptId(person.getSubdepartment().getSubDepartmentId());
             newPersonDto.setSubDeptName(person.getSubdepartment().getName());
 
-            //Resim cevirme islemi
             if (person.getPhoto() != null) {
                 String base64Photo = Base64.getEncoder().encodeToString(person.getPhoto());
                 newPersonDto.setPhoto(base64Photo);
             }
-
-
             personDto.add(newPersonDto);
         }
 
         logger.debug("Toplam personel sayısı: {}", personDto.size());
-
         return personDto;
     }
 
     public void saveOrUpdatePerson(PersonDto personDto) {
-
         Person person;
 
         if (personDto.getPersonId() > 0) {
@@ -73,7 +67,6 @@ public class AdminServiceImpl implements AdminService {
         } else {
             person = new Person();
         }
-
 
         person.setFirstName(personDto.getFirstName());
         person.setLastName(personDto.getLastName());
@@ -90,7 +83,6 @@ public class AdminServiceImpl implements AdminService {
                 logger.warn("Resim decode edilemedi: {}", e.getMessage());
             }
         }
-
         SubDepartment subDepartment = subDepartmentDao.findById(personDto.getSubDeptId());
         if (Objects.isNull(subDepartment)) {
             throw new RuntimeException("Subdepartment bulunamadı.");
@@ -101,7 +93,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
     public boolean deletePerson(int id) {
-
         logger.warn("Person silme işlemi başlatıldı: id={}", id);
 
         Person person = personDao.findById(id);
@@ -117,7 +108,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
     public List<PersonDto> getPersonsBySubDepartmentId(int id) {
-
         logger.info("SubDepartment'a göre personeller getiriliyor: id={}", id);
 
         List<Person> personList = personDao.findBySubdepartmentSubDepartmentId(id);
@@ -131,13 +121,10 @@ public class AdminServiceImpl implements AdminService {
             personDto.setSubDeptId(person.getSubdepartment().getSubDepartmentId());
             personDto.setSubDeptName(person.getSubdepartment().getName());
 
-            // --- RESIM CEVIRME ISLEMI BASTI ---
             if (person.getPhoto() != null) {
                 String base64Photo = Base64.getEncoder().encodeToString(person.getPhoto());
                 personDto.setPhoto(base64Photo);
             }
-            // --- RESIM CEVIRME ISLEMI BITTI ---
-
             dtoPerson.add(personDto);
         }
 
@@ -147,7 +134,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
     public List<PersonDto> getPersonsByDepartmentId(int id) {
-
         logger.info("Department'a göre personeller getiriliyor: id={}", id);
 
         List<Person> personList = personDao.findBySubdepartmentDepartmentDepartmentId(id);
@@ -161,18 +147,14 @@ public class AdminServiceImpl implements AdminService {
             personDto.setSubDeptId(person.getSubdepartment().getSubDepartmentId());
             personDto.setSubDeptName(person.getSubdepartment().getName());
 
-            // --- RESIM CEVIRME ISLEMI BASTI ---
             if (person.getPhoto() != null) {
                 String base64Photo = Base64.getEncoder().encodeToString(person.getPhoto());
                 personDto.setPhoto(base64Photo);
             }
-            // --- RESIM CEVIRME ISLEMI BITTI ---
-
             personDtoList.add(personDto);
         }
 
         logger.debug("Department bazlı personel sayısı: {}", personDtoList.size());
-
         return personDtoList;
     }
 }

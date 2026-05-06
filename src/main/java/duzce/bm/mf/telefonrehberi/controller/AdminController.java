@@ -81,11 +81,9 @@ public class AdminController {
 
         logger.info("Person create isteği: {} {}", firstName, lastName);
 
-        int subId = (Objects.nonNull(subDepartmentId)) ? subDepartmentId : 0;
-
         String base64Photo = FileUtil.convertToBase64(file);
 
-        PersonDto personDto = new PersonDto(0, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subId, null, base64Photo);
+        PersonDto personDto = new PersonDto(0, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subDepartmentId, null, base64Photo);
 
         adminPersonService.saveOrUpdatePerson(personDto);
 
@@ -110,11 +108,9 @@ public class AdminController {
 
         logger.info("Person update isteği: id={}", personId);
 
-        int subId = (Objects.nonNull(subDepartmentId)) ? subDepartmentId : 0;
-
         String base64Photo = FileUtil.convertToBase64(file);
 
-        PersonDto personDto = new PersonDto(personId, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subId, null, base64Photo);
+        PersonDto personDto = new PersonDto(personId, firstName, lastName, titleName, extensionNumber, roomNumber, email, null, subDepartmentId, null, base64Photo);
 
         adminPersonService.saveOrUpdatePerson(personDto);
 
