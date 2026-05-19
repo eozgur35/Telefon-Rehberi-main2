@@ -78,6 +78,7 @@ public class AdminServiceImpl implements AdminService {
                 person.setPhoto(decodedBytes);
             } catch (IllegalArgumentException e) {
                 logger.warn("Resim decode edilemedi: {}", e.getMessage());
+                //logger.warn("Resim decode edilemedi!");
             }
         }
         SubDepartment subDepartment = subDepartmentDao.findById(personDto.getSubDeptId());

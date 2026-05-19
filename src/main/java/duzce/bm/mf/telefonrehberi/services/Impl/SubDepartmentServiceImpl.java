@@ -84,4 +84,38 @@ public class SubDepartmentServiceImpl implements SubDepartmentService {
 
         return subDepartmentDtoList;
     }
+
+    @Override
+    public SubDepartmentDto saveSubDepartment(SubDepartmentDto dto) {
+        logger.info("SubDepartment kaydediliyor: {}", dto.getName());
+        SubDepartment sub;
+        if (dto.getSubDepartmentId() != 0) {
+            sub = subDepartmentDao.findById(dto.getSubDepartmentId());
+            if (sub == null) throw new ResourceNotFoundException("SubDepartment bulunamadı: id=" + dto.getSubDepartmentId());
+        } else {
+            sub = new SubDepartment();
+        }
+        Department department = departmentDao.findById(dto.getDepartmentId());
+        if (department == null) throw new ResourceNotFoundException("Department bulunamadı: id=" + dto.getDepartmentId());
+        sub.setName(dto.getName());
+        sub.setDepartment(department);
+        subDepartmentDao.save(sub);
+        dto.setSubDepartmentId(sub.getSubDepartmentId());
+        dto.setDepartmentId(sub.getDepartment().getDepartmentId());
+        logger.info("SubDepartment kaydedildi: id={}", sub.getSubDepartmentId());
+        return dto;
+    }
+
+    @Override
+    public boolean deleteSubDepartment(int id) {
+        logger.warn("SubDepartment siliniyor: id={}", id);
+        SubDepartment sub = subDepartmentDao.findById(id);
+        if (sub == null) {
+            logger.error("SubDepartment bulunamadı: id={}", id);
+            return false;
+        }
+        subDepartmentDao.delete(id);
+        logger.info("SubDepartment silindi: id={}", id);
+        return true;
+    }
 }

@@ -48,4 +48,17 @@ public class SubDepartmentDaoImpl implements SubDepartmentDao {
     public SubDepartment findById(Integer id) {
         return sessionFactory.getCurrentSession().get(SubDepartment.class, id);
     }
+
+    @Override
+    public void save(SubDepartment subDepartment) {
+        sessionFactory.getCurrentSession().saveOrUpdate(subDepartment);
+    }
+
+    @Override
+    public void delete(int id) {
+        SubDepartment sub = findById(id);
+        if (sub != null) {
+            sessionFactory.getCurrentSession().remove(sub);
+        }
+    }
 }

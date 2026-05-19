@@ -1,6 +1,8 @@
 package duzce.bm.mf.telefonrehberi.entity;
 
 import jakarta.persistence.*;
+import lombok.ToString;
+
 import java.io.Serializable;
 
 @Entity(name = "person")
@@ -26,6 +28,7 @@ public class Person implements Serializable {
     @JoinColumn(name = "subdepartment_id")
     private SubDepartment subdepartment;
 
+    @ToString.Exclude // Bu alanı loglarda (toString) yoksay
     @Lob
     @Column(name = "photo", columnDefinition="LONGBLOB")
     private byte[] photo;

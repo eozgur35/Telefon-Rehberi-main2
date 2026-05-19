@@ -10,4 +10,8 @@ public interface SubDepartmentService {
 
     List<SubDepartmentDto> getSubDepartmentsByDepartmentId(int id);
 
+    SubDepartmentDto saveSubDepartment(SubDepartmentDto dto);
+
+    boolean deleteSubDepartment(int id);
+
 }

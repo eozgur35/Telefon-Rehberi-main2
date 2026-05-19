@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import duzce.bm.mf.telefonrehberi.dto.DepartmentDto;
 import duzce.bm.mf.telefonrehberi.dto.SubDepartmentDto;
 import duzce.bm.mf.telefonrehberi.dto.PersonDto;
+import duzce.bm.mf.telefonrehberi.exception.DatabaseException;
 import duzce.bm.mf.telefonrehberi.services.AdminService;
 import duzce.bm.mf.telefonrehberi.services.DepartmentService;
 import duzce.bm.mf.telefonrehberi.services.SubDepartmentService;
@@ -61,6 +62,7 @@ public class AdminController {
 
         model.addAttribute("kisiler", personDtoList);
         model.addAttribute("departments", departDtoList);
+        model.addAttribute("allSubDepts", subDepartDtoList);
 
         logger.debug("Oturum email: {}", session.getAttribute("oturumEmail"));
 
@@ -135,6 +137,85 @@ public class AdminController {
             ra.addFlashAttribute("hata", "Kişi bulunamadı veya silinemedi!");
         }
 
+        return "redirect:/admin/persons";
+    }
+
+//Departman ve bolum ekleme
+    @PostMapping("/departments/create")
+    public String createDepartment(@RequestParam("name") String name,
+                                   @RequestParam(value = "phones", required = false) String phones,
+                                   @RequestParam(value = "faxes", required = false) String faxes,
+                                   RedirectAttributes ra) {
+        logger.info("Department create isteği: {}", name);
+        DepartmentDto dto = new DepartmentDto();
+        dto.setName(name);
+        dto.setPhones(phones);
+        dto.setFaxes(faxes);
+        departmentService.saveDepartment(dto);
+        ra.addFlashAttribute("mesaj", name + " birimi başarıyla eklendi!");
+        return "redirect:/admin/persons";
+    }
+
+    @PostMapping("/departments/update")
+    public String updateDepartment(@RequestParam("departmentId") int departmentId,
+                                   @RequestParam("name") String name,
+                                   @RequestParam(value = "phones", required = false) String phones,
+                                   @RequestParam(value = "faxes", required = false) String faxes,
+                                   RedirectAttributes ra) {
+        logger.info("Department update isteği: id={}", departmentId);
+        DepartmentDto dto = new DepartmentDto();
+        dto.setDepartmentId(departmentId);
+        dto.setName(name);
+        dto.setPhones(phones);
+        dto.setFaxes(faxes);
+        departmentService.saveDepartment(dto);
+        ra.addFlashAttribute("mesaj", name + " birimi başarıyla güncellendi!");
+        return "redirect:/admin/persons";
+    }
+
+    @PostMapping("/departments/delete")
+    public String deleteDepartment(@RequestParam("departmentId") int departmentId, RedirectAttributes ra) {
+        logger.warn("Department silme isteği: id={}", departmentId);
+        boolean deleted = departmentService.deleteDepartment(departmentId);
+        if (deleted) ra.addFlashAttribute("mesaj", "Birim başarıyla silindi!");
+        else         ra.addFlashAttribute("hata", "Birim bulunamadı veya silinemedi!");
+        return "redirect:/admin/persons";
+    }
+
+    @PostMapping("/subdepartments/create")
+    public String createSubDepartment(@RequestParam("name") String name,
+                                      @RequestParam("departmentId") int departmentId,
+                                      RedirectAttributes ra) {
+        logger.info("SubDepartment create isteği: {} -> deptId={}", name, departmentId);
+        SubDepartmentDto dto = new SubDepartmentDto();
+        dto.setName(name);
+        dto.setDepartmentId(departmentId);
+        subDepartmentService.saveSubDepartment(dto);
+        ra.addFlashAttribute("mesaj", name + " bölümü başarıyla eklendi!");
+        return "redirect:/admin/persons";
+    }
+
+    @PostMapping("/subdepartments/update")
+    public String updateSubDepartment(@RequestParam("subDepartmentId") int subDepartmentId,
+                                      @RequestParam("name") String name,
+                                      @RequestParam("departmentId") int departmentId,
+                                      RedirectAttributes ra) {
+        logger.info("SubDepartment update isteği: id={}", subDepartmentId);
+        SubDepartmentDto dto = new SubDepartmentDto();
+        dto.setSubDepartmentId(subDepartmentId);
+        dto.setName(name);
+        dto.setDepartmentId(departmentId);
+        subDepartmentService.saveSubDepartment(dto);
+        ra.addFlashAttribute("mesaj", name + " bölümü başarıyla güncellendi!");
+        return "redirect:/admin/persons";
+    }
+
+    @PostMapping("/subdepartments/delete")
+    public String deleteSubDepartment(@RequestParam("subDepartmentId") int subDepartmentId, RedirectAttributes ra) {
+        logger.warn("SubDepartment silme isteği: id={}", subDepartmentId);
+        boolean deleted = subDepartmentService.deleteSubDepartment(subDepartmentId);
+        if (deleted) ra.addFlashAttribute("mesaj", "Bölüm başarıyla silindi!");
+        else         ra.addFlashAttribute("hata", "Bölüm bulunamadı veya silinemedi!");
         return "redirect:/admin/persons";
     }
 }

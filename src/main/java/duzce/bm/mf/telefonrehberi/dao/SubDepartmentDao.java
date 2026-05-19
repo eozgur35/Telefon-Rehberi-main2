@@ -9,4 +9,6 @@ public interface SubDepartmentDao {
     List<SubDepartment> findByDepartment(Department department);
     List<SubDepartment> getAllSubDepartments();
     SubDepartment findById(Integer id);
+    void save(SubDepartment subDepartment);
+    void delete(int id);
 }

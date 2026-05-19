@@ -3,6 +3,7 @@ package duzce.bm.mf.telefonrehberi.controller;
 import duzce.bm.mf.telefonrehberi.dto.DepartmentDto;
 import duzce.bm.mf.telefonrehberi.dto.PersonDto;
 import duzce.bm.mf.telefonrehberi.dto.SubDepartmentDto;
+import duzce.bm.mf.telefonrehberi.exception.DatabaseException;
 import duzce.bm.mf.telefonrehberi.scheduler.MotivationScheduler;
 import duzce.bm.mf.telefonrehberi.services.AdminService;
 import duzce.bm.mf.telefonrehberi.services.DepartmentService;
@@ -83,5 +84,14 @@ public class HomePageController {
         model.addAttribute("motivation", motivationScheduler.getMotivationDto());
 
         return "rehber";
+    }
+    @GetMapping("/test-500")
+    public String trigger500Error() {
+        throw new RuntimeException("Sistemde beklenmeyen bir hata oluştu (Test)!");
+    }
+
+    @GetMapping("/test-db-error")
+    public String triggerDatabaseError() {
+        throw new DatabaseException("Sunucu ile bağlantı kesildi veya veritabanına ulaşılamıyor.");
     }
 }

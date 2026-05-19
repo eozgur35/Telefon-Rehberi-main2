@@ -34,4 +34,17 @@ public class DepartmentDaoImpl implements DepartmentDao {
     public Department findById(Integer id) {
         return sessionFactory.getCurrentSession().get(Department.class, id);
     }
+
+    @Override
+    public void save(Department department) {
+        sessionFactory.getCurrentSession().saveOrUpdate(department);
+    }
+
+    @Override
+    public void delete(int id) {
+        Department department = findById(id);
+        if (department != null) {
+            sessionFactory.getCurrentSession().remove(department);
+        }
+    }
 }

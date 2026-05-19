@@ -10,4 +10,6 @@ public interface DepartmentService {
 
     DepartmentDto findById(Integer id);
 
+    DepartmentDto saveDepartment(DepartmentDto dto);
+    boolean deleteDepartment(int id);
 }

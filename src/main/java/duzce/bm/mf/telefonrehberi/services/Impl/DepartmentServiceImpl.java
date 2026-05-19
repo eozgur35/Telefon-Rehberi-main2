@@ -62,4 +62,35 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         throw new ResourceNotFoundException("Department bulunamadı (id: " + id + ")");
     }
+    @Override
+    public DepartmentDto saveDepartment(DepartmentDto dto) {
+        logger.info("Department kaydediliyor: {}", dto.getName());
+        Department department;
+        if (dto.getDepartmentId() != 0) {
+            department = departmentDao.findById(dto.getDepartmentId());
+            if (department == null) throw new ResourceNotFoundException("Department bulunamadı: id=" + dto.getDepartmentId());
+        } else {
+            department = new Department();
+        }
+        department.setName(dto.getName());
+        department.setPhones(dto.getPhones());
+        department.setFaxes(dto.getFaxes());
+        departmentDao.save(department);
+        BeanUtils.copyProperties(department, dto);
+        logger.info("Department kaydedildi: id={}", department.getDepartmentId());
+        return dto;
+    }
+
+    @Override
+    public boolean deleteDepartment(int id) {
+        logger.warn("Department siliniyor: id={}", id);
+        Department department = departmentDao.findById(id);
+        if (department == null) {
+            logger.error("Department bulunamadı: id={}", id);
+            return false;
+        }
+        departmentDao.delete(id);
+        logger.info("Department silindi: id={}", id);
+        return true;
+    }
 }

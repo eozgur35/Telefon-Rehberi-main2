@@ -3,8 +3,102 @@
   <database-model serializer="dbm" dbms="MYSQL" family-id="MYSQL" format-version="4.55">
     <root id="1">
       <DefaultAuthPlugin>caching_sha2_password</DefaultAuthPlugin>
+      <DefaultCasing>lower/lower</DefaultCasing>
       <DefaultEngine>InnoDB</DefaultEngine>
       <DefaultTmpEngine>InnoDB</DefaultTmpEngine>
+      <Grants>|root||root|localhost|ALLOW_NONEXISTENT_DEFINER|G
+|root||root|localhost|ALTER|G
+|root||root|localhost|ALTER ROUTINE|G
+|root||root|localhost|APPLICATION_PASSWORD_ADMIN|G
+|root||mysql.infoschema|localhost|AUDIT_ABORT_EXEMPT|G
+|root||mysql.session|localhost|AUDIT_ABORT_EXEMPT|G
+|root||mysql.sys|localhost|AUDIT_ABORT_EXEMPT|G
+|root||root|localhost|AUDIT_ABORT_EXEMPT|G
+|root||root|localhost|AUDIT_ADMIN|G
+|root||mysql.session|localhost|AUTHENTICATION_POLICY_ADMIN|G
+|root||root|localhost|AUTHENTICATION_POLICY_ADMIN|G
+|root||mysql.session|localhost|BACKUP_ADMIN|G
+|root||root|localhost|BACKUP_ADMIN|G
+|root||root|localhost|BINLOG_ADMIN|G
+|root||root|localhost|BINLOG_ENCRYPTION_ADMIN|G
+|root||mysql.session|localhost|CLONE_ADMIN|G
+|root||root|localhost|CLONE_ADMIN|G
+|root||mysql.session|localhost|CONNECTION_ADMIN|G
+|root||root|localhost|CONNECTION_ADMIN|G
+|root||root|localhost|CREATE|G
+|root||root|localhost|CREATE ROLE|G
+|root||root|localhost|CREATE ROUTINE|G
+|root||root|localhost|CREATE TABLESPACE|G
+|root||root|localhost|CREATE TEMPORARY TABLES|G
+|root||root|localhost|CREATE USER|G
+|root||root|localhost|CREATE VIEW|G
+|root||root|localhost|CREATE_SPATIAL_REFERENCE_SYSTEM|G
+|root||root|localhost|DELETE|G
+|root||root|localhost|DROP|G
+|root||root|localhost|DROP ROLE|G
+|root||root|localhost|ENCRYPTION_KEY_ADMIN|G
+|root||root|localhost|EVENT|G
+|root||root|localhost|EXECUTE|G
+|root||root|localhost|FILE|G
+|root||mysql.infoschema|localhost|FIREWALL_EXEMPT|G
+|root||mysql.session|localhost|FIREWALL_EXEMPT|G
+|root||mysql.sys|localhost|FIREWALL_EXEMPT|G
+|root||root|localhost|FIREWALL_EXEMPT|G
+|root||root|localhost|FLUSH_OPTIMIZER_COSTS|G
+|root||root|localhost|FLUSH_PRIVILEGES|G
+|root||root|localhost|FLUSH_STATUS|G
+|root||root|localhost|FLUSH_TABLES|G
+|root||root|localhost|FLUSH_USER_RESOURCES|G
+|root||root|localhost|GROUP_REPLICATION_ADMIN|G
+|root||root|localhost|GROUP_REPLICATION_STREAM|G
+|root||root|localhost|INDEX|G
+|root||root|localhost|INNODB_REDO_LOG_ARCHIVE|G
+|root||root|localhost|INNODB_REDO_LOG_ENABLE|G
+|root||root|localhost|INSERT|G
+|root||root|localhost|LOCK TABLES|G
+|root||root|localhost|OPTIMIZE_LOCAL_TABLE|G
+|root||root|localhost|PASSWORDLESS_USER_ADMIN|G
+|root||mysql.session|localhost|PERSIST_RO_VARIABLES_ADMIN|G
+|root||root|localhost|PERSIST_RO_VARIABLES_ADMIN|G
+|root||root|localhost|PROCESS|G
+|root||root|localhost|REFERENCES|G
+|root||root|localhost|RELOAD|G
+|root||root|localhost|REPLICATION CLIENT|G
+|root||root|localhost|REPLICATION SLAVE|G
+|root||root|localhost|REPLICATION_APPLIER|G
+|root||root|localhost|REPLICATION_SLAVE_ADMIN|G
+|root||root|localhost|RESOURCE_GROUP_ADMIN|G
+|root||root|localhost|RESOURCE_GROUP_USER|G
+|root||root|localhost|ROLE_ADMIN|G
+|root||mysql.infoschema|localhost|SELECT|G
+|root||root|localhost|SELECT|G
+|root||root|localhost|SENSITIVE_VARIABLES_OBSERVER|G
+|root||root|localhost|SERVICE_CONNECTION_ADMIN|G
+|root||mysql.session|localhost|SESSION_VARIABLES_ADMIN|G
+|root||root|localhost|SESSION_VARIABLES_ADMIN|G
+|root||root|localhost|SET_ANY_DEFINER|G
+|root||root|localhost|SHOW DATABASES|G
+|root||root|localhost|SHOW VIEW|G
+|root||root|localhost|SHOW_ROUTINE|G
+|root||mysql.session|localhost|SHUTDOWN|G
+|root||root|localhost|SHUTDOWN|G
+|root||mysql.session|localhost|SUPER|G
+|root||root|localhost|SUPER|G
+|root||mysql.infoschema|localhost|SYSTEM_USER|G
+|root||mysql.session|localhost|SYSTEM_USER|G
+|root||mysql.sys|localhost|SYSTEM_USER|G
+|root||root|localhost|SYSTEM_USER|G
+|root||mysql.session|localhost|SYSTEM_VARIABLES_ADMIN|G
+|root||root|localhost|SYSTEM_VARIABLES_ADMIN|G
+|root||root|localhost|TABLE_ENCRYPTION_ADMIN|G
+|root||root|localhost|TELEMETRY_LOG_ADMIN|G
+|root||root|localhost|TRANSACTION_GTID_TAG|G
+|root||root|localhost|TRIGGER|G
+|root||root|localhost|UPDATE|G
+|root||root|localhost|XA_RECOVER_ADMIN|G
+|root||root|localhost|grant option|G
+performance_schema|schema||mysql.session|localhost|SELECT|G
+sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <ServerVersion>9.6.0</ServerVersion>
     </root>
     <collation id="2" parent="1" name="armscii8_bin">
@@ -919,8 +1013,8 @@
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <Current>1</Current>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2026-04-24.22:30:37</LastIntrospectionLocalTimestamp>
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+      <LastIntrospectionLocalTimestamp>2026-05-04.20:19:06</LastIntrospectionLocalTimestamp>
+      <CollationName>utf8mb4_unicode_ci</CollationName>
     </schema>
     <schema id="292" parent="1" name="sys">
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
@@ -943,165 +1037,202 @@
     <table id="297" parent="291" name="department">
       <DetailsLevel>3</DetailsLevel>
       <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+      <CollationName>utf8mb4_turkish_ci</CollationName>
     </table>
-    <table id="298" parent="291" name="person">
+    <table id="298" parent="291" name="password_reset_token">
       <DetailsLevel>3</DetailsLevel>
       <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_unicode_ci</CollationName>
+      <CollationName>utf8mb4_turkish_ci</CollationName>
     </table>
-    <table id="299" parent="291" name="subdepartment">
+    <table id="299" parent="291" name="person">
       <DetailsLevel>3</DetailsLevel>
       <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+      <CollationName>utf8mb4_turkish_ci</CollationName>
     </table>
-    <table id="300" parent="291" name="users">
+    <table id="300" parent="291" name="subdepartment">
       <DetailsLevel>3</DetailsLevel>
       <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+      <CollationName>utf8mb4_turkish_ci</CollationName>
     </table>
-    <column id="301" parent="297" name="departmentId">
-      <AutoIncrement>1</AutoIncrement>
+    <table id="301" parent="291" name="users">
+      <DetailsLevel>3</DetailsLevel>
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_turkish_ci</CollationName>
+    </table>
+    <column id="302" parent="297" name="departmentId">
+      <AutoIncrement>5</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="302" parent="297" name="faxes">
+    <column id="303" parent="297" name="faxes">
       <Position>2</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="303" parent="297" name="name">
+    <column id="304" parent="297" name="name">
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="304" parent="297" name="phones">
+    <column id="305" parent="297" name="phones">
       <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <index id="305" parent="297" name="PRIMARY">
+    <index id="306" parent="297" name="PRIMARY">
       <ColNames>departmentId</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="306" parent="297" name="PRIMARY">
+    <key id="307" parent="297" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="307" parent="298" name="personId">
-      <AutoIncrement>14</AutoIncrement>
+    <column id="308" parent="298" name="id">
+      <AutoIncrement>20</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="308" parent="298" name="subdepartment_id">
-      <Position>2</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
     <column id="309" parent="298" name="email">
+      <Position>2</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <column id="310" parent="298" name="otp">
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="310" parent="298" name="extensionNumber">
+    <column id="311" parent="298" name="users_id">
       <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="311" parent="298" name="firstName">
+    <column id="312" parent="298" name="verified">
+      <Position>5</Position>
+      <StoredType>bit(1)|0s</StoredType>
+    </column>
+    <index id="313" parent="298" name="PRIMARY">
+      <ColNames>id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="314" parent="298" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="315" parent="299" name="personId">
+      <AutoIncrement>62</AutoIncrement>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StoredType>int|0s</StoredType>
+    </column>
+    <column id="316" parent="299" name="email">
+      <Position>2</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <column id="317" parent="299" name="extensionNumber">
+      <Position>3</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <column id="318" parent="299" name="firstName">
+      <Position>4</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <column id="319" parent="299" name="lastName">
       <Position>5</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="312" parent="298" name="lastName">
+    <column id="320" parent="299" name="photo">
       <Position>6</Position>
-      <StoredType>varchar(255)|0s</StoredType>
+      <StoredType>longblob|0s</StoredType>
     </column>
-    <column id="313" parent="298" name="roomNumber">
+    <column id="321" parent="299" name="roomNumber">
       <Position>7</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="314" parent="298" name="titleName">
+    <column id="322" parent="299" name="titleName">
       <Position>8</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="315" parent="298" name="photo">
+    <column id="323" parent="299" name="subdepartment_id">
       <Position>9</Position>
-      <StoredType>longblob|0s</StoredType>
+      <StoredType>int|0s</StoredType>
     </column>
-    <foreign-key id="316" parent="298" name="FK1j8vvnyc7g8onm34hcbwcrhx3">
+    <foreign-key id="324" parent="299" name="FK1j8vvnyc7g8onm34hcbwcrhx3">
       <ColNames>subdepartment_id</ColNames>
       <RefColNames>subDepartmentId</RefColNames>
       <RefTableName>subdepartment</RefTableName>
     </foreign-key>
-    <index id="317" parent="298" name="PRIMARY">
+    <index id="325" parent="299" name="PRIMARY">
       <ColNames>personId</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="318" parent="298" name="FK1j8vvnyc7g8onm34hcbwcrhx3">
+    <index id="326" parent="299" name="FK1j8vvnyc7g8onm34hcbwcrhx3">
       <ColNames>subdepartment_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="319" parent="298" name="PRIMARY">
+    <key id="327" parent="299" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="320" parent="299" name="department_id">
+    <column id="328" parent="300" name="subDepartmentId">
+      <AutoIncrement>10</AutoIncrement>
+      <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="321" parent="299" name="subDepartmentId">
-      <AutoIncrement>1</AutoIncrement>
-      <NotNull>1</NotNull>
+    <column id="329" parent="300" name="name">
       <Position>2</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="322" parent="299" name="name">
-      <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <foreign-key id="323" parent="299" name="FKqrm5m7uy6q7dos2yyg7as3fd0">
+    <column id="330" parent="300" name="department_id">
+      <Position>3</Position>
+      <StoredType>int|0s</StoredType>
+    </column>
+    <foreign-key id="331" parent="300" name="FKqrm5m7uy6q7dos2yyg7as3fd0">
       <ColNames>department_id</ColNames>
       <RefColNames>departmentId</RefColNames>
       <RefTableName>department</RefTableName>
     </foreign-key>
-    <index id="324" parent="299" name="PRIMARY">
+    <index id="332" parent="300" name="PRIMARY">
       <ColNames>subDepartmentId</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="325" parent="299" name="FKqrm5m7uy6q7dos2yyg7as3fd0">
+    <index id="333" parent="300" name="FKqrm5m7uy6q7dos2yyg7as3fd0">
       <ColNames>department_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="326" parent="299" name="PRIMARY">
+    <key id="334" parent="300" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="327" parent="300" name="userId">
-      <AutoIncrement>1</AutoIncrement>
+    <column id="335" parent="301" name="userId">
+      <AutoIncrement>6</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="328" parent="300" name="email">
+    <column id="336" parent="301" name="email">
       <Position>2</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="329" parent="300" name="password">
+    <column id="337" parent="301" name="password">
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="330" parent="300" name="role">
+    <column id="338" parent="301" name="role">
       <Position>4</Position>
       <StoredType>enum(&apos;ADMIN&apos;)|0e</StoredType>
     </column>
-    <index id="331" parent="300" name="PRIMARY">
+    <index id="339" parent="301" name="PRIMARY">
       <ColNames>userId</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="332" parent="300" name="PRIMARY">
+    <key id="340" parent="301" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>

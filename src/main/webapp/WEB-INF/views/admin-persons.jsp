@@ -65,6 +65,11 @@
         .form-group label { font-size: 12.5px; font-weight: 600; color: #374151; }
         .form-group input, .form-group select { height: 40px; border: 1px solid #d1d5db; border-radius: 7px; padding: 0 12px; font-size: 14px; }
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem; }
+        .tabs { display: flex; gap: 4px; background: #fff; border-bottom: 1px solid #e2e4ea; padding: 0 2rem; }
+        .tab-btn { padding: 12px 20px; font-size: 13.5px; font-weight: 500; font-family: inherit; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; cursor: pointer; transition: all 0.15s; }
+        .tab-btn.active { color: #1a3a6b; border-bottom-color: #1a3a6b; font-weight: 600; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
         footer { background: #1a3a6b; color: rgba(255,255,255,0.65); text-align: center; padding: 14px 2rem; font-size: 12px; }
     </style>
 </head>
@@ -83,6 +88,12 @@
         <a href="/logout"><spring:message code="admin.logout" /></a>
     </div>
 </header>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(event, 'persons')">Kişiler</button>
+    <button class="tab-btn" onclick="switchTab(event, 'departments')">Birimler</button>
+    <button class="tab-btn" onclick="switchTab(event, 'subdepartments')">Bölümler</button>
+</div>
 
 <div class="filter-bar">
     <div class="filter-group">
@@ -104,64 +115,142 @@
     <c:if test="${not empty mesaj}"><div class="alert alert-success">${mesaj}</div></c:if>
     <c:if test="${not empty hata}"><div class="alert alert-error">${hata}</div></c:if>
 
-    <div class="section-header">
-        <h2><spring:message code="admin.manage.persons" /></h2>
-        <button class="btn btn-primary" onclick="openModal('modalEkle')">
-            <spring:message code="admin.btn.add" />
-        </button>
+    <%-- ===== KİŞİLER PANELİ ===== --%>
+    <div id="tab-persons" class="tab-panel active">
+        <div class="section-header">
+            <h2>Kişi Yönetimi</h2>
+            <button class="btn btn-primary" onclick="openModal('modalEkle')">+ Kişi Ekle</button>
+        </div>
+        <div class="table-card">
+            <div class="table-inner-header">
+                <h3>Kişi Listesi</h3>
+                <span class="count-badge" id="resultCount"><span>${fn:length(kisiler)}</span> kişi</span>
+            </div>
+            <table>
+                <thead><tr>
+                    <th>Ad Soyad</th><th>Birim</th><th>Bölüm</th>
+                    <th>Oda</th><th>Dahili</th><th>E-posta</th><th>İşlem</th>
+                </tr></thead>
+                <tbody id="personTable">
+                <c:forEach var="k" items="${kisiler}">
+                    <tr class="person-row"
+                        data-name="${k.firstName} ${k.lastName}"
+                        data-person-id="${k.personId}"
+                        data-first-name="${k.firstName}"
+                        data-last-name="${k.lastName}"
+                        data-title="${k.titleName}"
+                        data-extension="${k.extensionNumber}"
+                        data-room="${k.roomNumber}"
+                        data-email="${k.email}"
+                        data-sub-id="${not empty k.subDeptId ? k.subDeptId : 0}">
+                        <td>
+                            <div class="person-info-wrapper">
+                                <c:choose>
+                                    <c:when test="${not empty k.photo}">
+                                        <img src="data:image/jpeg;base64,${k.photo}" class="profile-img" alt="${k.firstName}">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="default-avatar">${fn:substring(k.firstName,0,1)}${fn:substring(k.lastName,0,1)}</div>
+                                    </c:otherwise>
+                                </c:choose>
+                                <div>
+                                    <div class="person-name">${k.firstName} ${k.lastName}</div>
+                                    <div class="person-title">${k.titleName}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${not empty k.deptName    ? k.deptName    : '—'}</td>
+                        <td>${not empty k.subDeptName ? k.subDeptName : '—'}</td>
+                        <td>${not empty k.roomNumber  ? k.roomNumber  : '—'}</td>
+                        <td>${not empty k.extensionNumber ? k.extensionNumber : '—'}</td>
+                        <td>${not empty k.email       ? k.email       : '—'}</td>
+                        <td>
+                            <div class="td-actions">
+                                <button class="btn btn-outline btn-sm" onclick="openEditFromRow(this)">Düzenle</button>
+                                <button class="btn btn-danger btn-sm"  onclick="openDeleteFromRow(this)">Sil</button>
+                            </div>
+                        </td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="table-card">
-        <div class="table-inner-header">
-            <h3><spring:message code="admin.list.title" /></h3>
-            <span class="count-badge" id="resultCount"><span>${fn:length(kisiler)}</span> <spring:message code="table.person.count" /></span>
+    <%-- ===== BİRİMLER PANELİ ===== --%>
+    <div id="tab-departments" class="tab-panel">
+        <div class="section-header">
+            <h2>Birim Yönetimi</h2>
+            <button class="btn btn-primary" onclick="openModal('modalDeptEkle')">+ Birim Ekle</button>
         </div>
-        <table>
-            <thead>
-            <tr>
-                <th><spring:message code="table.name" /></th>
-                <th><spring:message code="table.department" /></th>
-                <th><spring:message code="table.subdepartment" /></th>
-                <th><spring:message code="table.room" /></th>
-                <th><spring:message code="table.extension" /></th>
-                <th><spring:message code="table.email" /></th>
-                <th>İşlem</th>
-            </tr>
-            </thead>
-            <tbody id="personTable">
-            <c:forEach var="k" items="${kisiler}">
-                <tr class="person-row" data-name="${k.firstName} ${k.lastName}" data-person-id="${k.personId}" data-first-name="${k.firstName}" data-last-name="${k.lastName}" data-title="${k.titleName}" data-extension="${k.extensionNumber}" data-room="${k.roomNumber}" data-email="${k.email}" data-sub-id="${not empty k.subDeptId ? k.subDeptId : 0}">
-                    <td>
-                        <div class="person-info-wrapper">
-                            <c:choose>
-                                <c:when test="${not empty k.photo}">
-                                    <img src="data:image/jpeg;base64,${k.photo}" class="profile-img" alt="${k.firstName}">
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="default-avatar">${fn:substring(k.firstName, 0, 1)}${fn:substring(k.lastName, 0, 1)}</div>
-                                </c:otherwise>
-                            </c:choose>
-                            <div>
-                                <div class="person-name">${k.firstName} ${k.lastName}</div>
-                                <div class="person-title">${k.titleName}</div>
+        <div class="table-card">
+            <div class="table-inner-header">
+                <h3>Birim Listesi</h3>
+                <span class="count-badge">${fn:length(departments)} birim</span>
+            </div>
+            <table>
+                <thead><tr>
+                    <th>Birim Adı</th><th>Telefon(lar)</th><th>Faks(lar)</th><th>İşlem</th>
+                </tr></thead>
+                <tbody>
+                <c:forEach var="d" items="${departments}">
+                    <tr data-dept-id="${d.departmentId}"
+                        data-dept-name="${d.name}"
+                        data-dept-phones="${not empty d.phones ? d.phones : ''}"
+                        data-dept-faxes="${not empty d.faxes  ? d.faxes  : ''}">
+                        <td><strong>${d.name}</strong></td>
+                        <td>${not empty d.phones ? d.phones : '—'}</td>
+                        <td>${not empty d.faxes  ? d.faxes  : '—'}</td>
+                        <td>
+                            <div class="td-actions">
+                                <button class="btn btn-outline btn-sm" onclick="openEditDept(this)">Düzenle</button>
+                                <button class="btn btn-danger btn-sm"  onclick="openDeleteDept(this)">Sil</button>
                             </div>
-                        </div>
-                    </td>
-                    <td>${not empty k.deptName ? k.deptName : '—'}</td>
-                    <td>${not empty k.subDeptName ? k.subDeptName : '—'}</td>
-                    <td>${not empty k.roomNumber ? k.roomNumber : '—'}</td>
-                    <td>${not empty k.extensionNumber ? k.extensionNumber : '—'}</td>
-                    <td>${not empty k.email ? k.email : '—'}</td>
-                    <td>
-                        <div class="td-actions">
-                            <button class="btn btn-outline btn-sm" onclick="openEditFromRow(this)"><spring:message code="admin.action.edit" /></button>
-                            <button class="btn btn-danger btn-sm" onclick="openDeleteFromRow(this)"><spring:message code="admin.action.delete" /></button>
-                        </div>
-                    </td>
-                </tr>
-            </c:forEach>
-            </tbody>
-        </table>
+                        </td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <%-- ===== BÖLÜMLER PANELİ ===== --%>
+    <div id="tab-subdepartments" class="tab-panel">
+        <div class="section-header">
+            <h2>Bölüm Yönetimi</h2>
+            <button class="btn btn-primary" onclick="openModal('modalSubEkle')">+ Bölüm Ekle</button>
+        </div>
+        <div class="table-card">
+            <div class="table-inner-header">
+                <h3>Bölüm Listesi</h3>
+                <span class="count-badge">${fn:length(allSubDepts)} bölüm</span>
+            </div>
+            <table>
+                <thead><tr>
+                    <th>Bölüm Adı</th><th>Bağlı Birim</th><th>İşlem</th>
+                </tr></thead>
+                <tbody>
+                <c:forEach var="s" items="${allSubDepts}">
+                    <tr data-sub-id="${s.subDepartmentId}"
+                        data-sub-name="${s.name}"
+                        data-sub-dept-id="${s.departmentId}">
+                        <td>${s.name}</td>
+                        <td>
+                            <c:forEach var="d" items="${departments}">
+                                <c:if test="${d.departmentId == s.departmentId}">${d.name}</c:if>
+                            </c:forEach>
+                        </td>
+                        <td>
+                            <div class="td-actions">
+                                <button class="btn btn-outline btn-sm" onclick="openEditSub(this)">Düzenle</button>
+                                <button class="btn btn-danger btn-sm"  onclick="openDeleteSub(this)">Sil</button>
+                            </div>
+                        </td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>
 
@@ -334,6 +423,156 @@
 
         document.getElementById('resultCount').querySelector('span').textContent = visibleCount;
     }
+    function switchTab(e, name) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        e.currentTarget.classList.add('active');
+    }
+
+    // Birim modal fonksiyonları
+    function openEditDept(btn) {
+        const tr = btn.closest('tr');
+        document.getElementById('editDeptId').value    = tr.dataset.deptId;
+        document.getElementById('editDeptName').value  = tr.dataset.deptName;
+        document.getElementById('editDeptPhones').value= tr.dataset.deptPhones;
+        document.getElementById('editDeptFaxes').value = tr.dataset.deptFaxes;
+        openModal('modalDeptDuzenle');
+    }
+    function openDeleteDept(btn) {
+        document.getElementById('deleteDeptId').value = btn.closest('tr').dataset.deptId;
+        openModal('modalDeptSil');
+    }
+
+    // Bölüm modal fonksiyonları
+    function openEditSub(btn) {
+        const tr = btn.closest('tr');
+        document.getElementById('editSubId').value     = tr.dataset.subId;
+        document.getElementById('editSubName').value   = tr.dataset.subName;
+        document.getElementById('editSubDeptId').value = tr.dataset.subDeptId;
+        openModal('modalSubDuzenle');
+    }
+    function openDeleteSub(btn) {
+        document.getElementById('deleteSubId').value = btn.closest('tr').dataset.subId;
+        openModal('modalSubSil');
+    }
 </script>
+<%-- Birim Ekle --%>
+<div class="modal-overlay" id="modalDeptEkle">
+    <div class="modal">
+        <h3>Yeni Birim Ekle</h3>
+        <form action="/admin/persons/departments/create" method="post">
+            <div class="form-grid">
+                <div class="form-group full"><label>Birim Adı *</label><input type="text" name="name" required></div>
+                <div class="form-group full"><label>Telefon(lar)</label><input type="text" name="phones" placeholder="0380 000 00 00, ..."></div>
+                <div class="form-group full"><label>Faks(lar)</label><input type="text" name="faxes" placeholder="0380 000 00 01, ..."></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('modalDeptEkle')">İptal</button>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%-- Birim Düzenle --%>
+<div class="modal-overlay" id="modalDeptDuzenle">
+    <div class="modal">
+        <h3>Birimi Düzenle</h3>
+        <form action="/admin/persons/departments/update" method="post">
+            <input type="hidden" name="departmentId" id="editDeptId">
+            <div class="form-grid">
+                <div class="form-group full"><label>Birim Adı *</label><input type="text" name="name" id="editDeptName" required></div>
+                <div class="form-group full"><label>Telefon(lar)</label><input type="text" name="phones" id="editDeptPhones"></div>
+                <div class="form-group full"><label>Faks(lar)</label><input type="text" name="faxes" id="editDeptFaxes"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('modalDeptDuzenle')">İptal</button>
+                <button type="submit" class="btn btn-primary">Güncelle</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%-- Birim Sil --%>
+<div class="modal-overlay" id="modalDeptSil">
+    <div class="modal">
+        <h3>Birimi Sil</h3>
+        <p style="margin:1rem 0;color:#374151;font-size:14px;">Bu birimi silmek istediğinizden emin misiniz? Bağlı tüm bölümler ve kişiler de silinecektir.</p>
+        <form action="/admin/persons/departments/delete" method="post">
+            <input type="hidden" name="departmentId" id="deleteDeptId">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('modalDeptSil')">İptal</button>
+                <button type="submit" class="btn btn-danger">Evet, Sil</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%-- Bölüm Ekle --%>
+<div class="modal-overlay" id="modalSubEkle">
+    <div class="modal">
+        <h3>Yeni Bölüm Ekle</h3>
+        <form action="/admin/persons/subdepartments/create" method="post">
+            <div class="form-grid">
+                <div class="form-group full"><label>Bölüm Adı *</label><input type="text" name="name" required></div>
+                <div class="form-group full">
+                    <label>Bağlı Birim *</label>
+                    <select name="departmentId" required>
+                        <option value="">— Birim Seçin —</option>
+                        <c:forEach var="d" items="${departments}">
+                            <option value="${d.departmentId}">${d.name}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('modalSubEkle')">İptal</button>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%-- Bölüm Düzenle --%>
+<div class="modal-overlay" id="modalSubDuzenle">
+    <div class="modal">
+        <h3>Bölümü Düzenle</h3>
+        <form action="/admin/persons/subdepartments/update" method="post">
+            <input type="hidden" name="subDepartmentId" id="editSubId">
+            <div class="form-grid">
+                <div class="form-group full"><label>Bölüm Adı *</label><input type="text" name="name" id="editSubName" required></div>
+                <div class="form-group full">
+                    <label>Bağlı Birim *</label>
+                    <select name="departmentId" id="editSubDeptId" required>
+                        <option value="">— Birim Seçin —</option>
+                        <c:forEach var="d" items="${departments}">
+                            <option value="${d.departmentId}">${d.name}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('modalSubDuzenle')">İptal</button>
+                <button type="submit" class="btn btn-primary">Güncelle</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%-- Bölüm Sil --%>
+<div class="modal-overlay" id="modalSubSil">
+    <div class="modal">
+        <h3>Bölümü Sil</h3>
+        <p style="margin:1rem 0;color:#374151;font-size:14px;">Bu bölümü silmek istediğinizden emin misiniz?</p>
+        <form action="/admin/persons/subdepartments/delete" method="post">
+            <input type="hidden" name="subDepartmentId" id="deleteSubId">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('modalSubSil')">İptal</button>
+                <button type="submit" class="btn btn-danger">Evet, Sil</button>
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>
